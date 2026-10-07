@@ -1,0 +1,121 @@
+---
+/**
+ * A tall dark section with a sticky middle. While you scroll through it, the word "contact" in
+ * many languages flies out of the distance past you (src/motion/contact-words.ts).
+ * Email and phone links get their real addresses in the browser (src/motion/contact.ts).
+ */
+import Button from '../components/Button.astro'
+import { copy } from '../data/copy'
+import { site } from '../data/site'
+---
+
+<section class="contact" id="contact" data-theme="light" data-contact-section>
+  <div class="contact__sticky">
+    <div class="contact__words" data-contact-words aria-hidden="true"></div>
+    <div class="contact__content" data-contact-content>
+      <h2 class="contact__heading">{copy.contact.heading}</h2>
+      <p class="contact__text">{copy.contact.text}</p>
+      <div class="btn-row">
+        <Button href="#contact" contact="whatsapp" variant="silver" external>WhatsApp</Button>
+        <Button href="#contact" contact="email" variant="blue">Email me</Button>
+      </div>
+      <ul class="contact__links">
+        <li>
+          <a data-underline data-contact="phone" href="#contact"><span data-contact-text="phone">Phone</span></a>
+        </li>
+        <li>
+          <a data-underline data-contact="email" href="#contact"><span data-contact-text="email">Email</span></a>
+        </li>
+        {
+          site.contact.linkedin && (
+            <li>
+              <a data-underline href={site.contact.linkedin} target="_blank" rel="noopener">
+                LinkedIn
+              </a>
+            </li>
+          )
+        }
+        <li>
+          <a data-underline href={site.contact.github} target="_blank" rel="noopener">GitHub</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .contact {
+    position: relative;
+    width: 100%;
+    height: 250dvh;
+    background: var(--c-ink);
+    color: var(--c-silver);
+  }
+  .contact__sticky {
+    position: sticky;
+    top: 0;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100dvh;
+    overflow: hidden;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+  }
+  .contact__words {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    overflow: hidden;
+    pointer-events: none;
+    transform-style: preserve-3d;
+  }
+  .contact__word {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    color: rgb(255 255 255 / 0.5);
+    font-size: clamp(1.5rem, 3.5vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    will-change: transform, opacity, filter;
+  }
+  .contact__content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2em;
+    width: min(90%, 50rem);
+    text-align: center;
+  }
+  .contact__heading {
+    font-size: clamp(5em, 13vw, 12.5em);
+    line-height: 0.85;
+    text-transform: uppercase;
+  }
+  .contact__text {
+    max-width: 30em;
+  }
+  .contact__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5em 2em;
+    padding: 0;
+    list-style: none;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 767px) {
+    .contact__content {
+      gap: 1.5em;
+    }
+    .contact__heading {
+      font-size: clamp(3.5em, 17vw, 7em);
+    }
+  }
+</style>

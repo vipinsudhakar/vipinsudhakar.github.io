@@ -1,0 +1,106 @@
+---
+import { copy } from '../data/copy'
+import { toolkit } from '../data/toolkit'
+---
+
+<section class="toolkit" data-theme="dark" aria-labelledby="toolkit-title">
+  <h2 class="toolkit__big" id="toolkit-title" data-split-random>{copy.toolkit.big}</h2>
+  <p class="toolkit__text">{copy.toolkit.text}</p>
+  <ul class="toolkit__logos">
+    {
+      toolkit.map(({ label, icon }) => (
+        <li class="toolkit__logo">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d={icon.path} />
+          </svg>
+          <span>{label}</span>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style is:global>
+  .toolkit {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3em;
+    width: 100%;
+    min-height: 52em;
+    padding: 7.5em 2em;
+  }
+  .toolkit__big {
+    font-size: 7.3em;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .toolkit__text {
+    max-width: 30em;
+    text-align: center;
+  }
+  .toolkit__logos {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2em;
+    width: 100%;
+    max-width: 60em;
+    margin-top: 1em;
+    padding: 0;
+    list-style: none;
+  }
+  .toolkit__logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8em;
+    color: var(--c-ink);
+  }
+  .toolkit__logo svg {
+    width: 2.6em;
+    height: 2.6em;
+    fill: currentColor;
+  }
+  .toolkit__logo span {
+    font-size: 0.8em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 991px) {
+    .toolkit {
+      gap: 2.25em;
+      min-height: 39em;
+      padding: 5.625em 1.5em;
+    }
+    .toolkit__big {
+      font-size: 5em;
+    }
+    .toolkit__logos {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      row-gap: 2.25em;
+    }
+  }
+  @media (max-width: 767px) {
+    .toolkit {
+      min-height: 0;
+      padding: 4.5em 1em;
+    }
+    .toolkit__big {
+      font-size: 3.35em;
+    }
+    .toolkit__logos {
+      justify-items: center;
+      column-gap: 0.5em;
+    }
+    .toolkit__logo span {
+      font-size: 0.7em;
+      text-align: center;
+      white-space: normal;
+    }
+  }
+</style>

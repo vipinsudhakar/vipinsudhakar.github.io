@@ -1,0 +1,47 @@
+---
+/**
+ * VIPIN SUDHAKAR as one SVG, so it scales as a single piece (the header animates its width).
+ *
+ * The letters are live Archivo text. The run's textLength is pinned to its measured advance, so a
+ * fallback font can never push it out of the box. Archivo 700 metrics per 1em: cap height 0.688;
+ * "VIPIN SUDHAKAR" advance 8.700, with the ink ending at 8.673. The box is cut to the capitals;
+ * the round letters' overshoot (about 0.016em) is allowed to spill past it.
+ */
+interface Props {
+  class?: string
+  /** Decorative copies (the footer one) are hidden from screen readers. */
+  decorative?: boolean
+}
+const { class: className, decorative = false } = Astro.props
+
+const F = 150 // font size, in viewBox units
+const r = (n: number) => Math.round(n * 10) / 10
+const W = Math.round(8.673 * F) // ink width, so the letters meet both edges of the box
+const H = Math.round(0.688 * F) // cap height
+const advance = r(8.7 * F)
+---
+
+<svg
+  class:list={['wordmark', className]}
+  viewBox={`0 0 ${W} ${H}`}
+  role={decorative ? undefined : 'img'}
+  aria-label={decorative ? undefined : 'Vipin Sudhakar'}
+  aria-hidden={decorative ? 'true' : undefined}
+  focusable="false"
+>
+  <text x="0" y={H} font-size={F} textLength={advance} lengthAdjust="spacingAndGlyphs">VIPIN SUDHAKAR</text>
+</svg>
+
+<style is:global>
+  .wordmark {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    fill: currentColor;
+  }
+  .wordmark text {
+    font-family: var(--font);
+    font-weight: 700;
+  }
+</style>

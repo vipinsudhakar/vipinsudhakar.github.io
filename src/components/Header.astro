@@ -1,0 +1,164 @@
+---
+/**
+ * The fixed header. The wordmark starts as a full-width masthead over the hero and shrinks into
+ * the corner as you scroll past it (src/motion/logo-scroll.ts), then works as a back-to-top link.
+ * The header's colour follows the section underneath it (src/motion/theme-nav.ts).
+ */
+import Button from './Button.astro'
+import Wordmark from './Wordmark.astro'
+---
+
+<header class="header" data-header>
+  <div class="header__inner">
+    <div class="header__brand-wrap">
+      <a class="brand" href="#top" data-brand data-anchor aria-label="Vipin Sudhakar, back to top">
+        <Wordmark decorative />
+      </a>
+    </div>
+    <nav class="header__cta" aria-label="Get in touch">
+      <Button href="#contact" contact="email" variant="ink">Email me</Button>
+      <Button href="#contact" contact="whatsapp" variant="blue" external>WhatsApp</Button>
+    </nav>
+  </div>
+</header>
+
+<div class="blur-strip" aria-hidden="true">
+  <div></div><div></div><div></div><div></div><div></div>
+</div>
+
+<style is:global>
+  .header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 99;
+    padding: 1em 2em;
+    color: var(--c-ink);
+    transition: color 0.2s;
+    pointer-events: none;
+  }
+  [data-nav-theme='light'] .header {
+    color: var(--c-silver);
+  }
+  .header__inner {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    max-width: calc(var(--scale-max) - 4em);
+    margin-inline: auto;
+  }
+  .header__brand-wrap {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  /* --p runs from 0 (full-width masthead) to 1 (compact logo in the corner). --brand-y drops the
+     masthead below the buttons, as a share of its own height. */
+  .brand {
+    --p: 0;
+    --brand-w: 16em;
+    --brand-y: 112%;
+    position: absolute;
+    left: 0;
+    width: calc(var(--brand-w) + (100% - var(--brand-w)) * (1 - var(--p)));
+    translate: 0 calc(var(--brand-y) * (1 - var(--p)));
+    pointer-events: none;
+  }
+  .brand.is-compact {
+    pointer-events: auto;
+  }
+  .brand.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .no-js .brand {
+    --p: 1;
+  }
+
+  .header__cta {
+    display: flex;
+    gap: 1em;
+    pointer-events: auto;
+  }
+  /* Over blue and black sections the pills turn light, or they would vanish into the background. */
+  [data-nav-theme='light'] .header .btn {
+    --btn-fg: var(--c-ink);
+    --btn-bg: var(--c-silver);
+  }
+  [data-nav-theme='light'] .header .btn[data-variant='blue'] {
+    --btn-fg: var(--c-blue);
+    --btn-bg: var(--c-white);
+  }
+
+  /* Five stacked layers of backdrop blur, strongest at the very top, so content scrolling under
+     the header softens instead of being cut off by a hard edge. */
+  .blur-strip {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 98;
+    width: 100%;
+    height: 8em;
+    pointer-events: none;
+  }
+  .blur-strip > div {
+    position: absolute;
+    inset: 0;
+  }
+  .blur-strip > :nth-child(1) {
+    backdrop-filter: blur(0.02em);
+    mask: linear-gradient(#000 0 50%, #0000 87.5%);
+  }
+  .blur-strip > :nth-child(2) {
+    backdrop-filter: blur(0.04em);
+    mask: linear-gradient(#000 0 37.5%, #0000 75%);
+  }
+  .blur-strip > :nth-child(3) {
+    backdrop-filter: blur(0.08em);
+    mask: linear-gradient(#000 0 25%, #0000 62.5%);
+  }
+  .blur-strip > :nth-child(4) {
+    backdrop-filter: blur(0.14em);
+    mask: linear-gradient(#000 0 12.5%, #0000 50%);
+  }
+  .blur-strip > :nth-child(5) {
+    backdrop-filter: blur(0.22em);
+    mask: linear-gradient(#000 0 0%, #0000 37.5%);
+  }
+
+  @media (max-width: 991px) {
+    .header {
+      padding: 0.75em 1.5em;
+    }
+    .brand {
+      --brand-w: 12em;
+      --brand-y: 130%;
+    }
+    .header__cta {
+      gap: 0.75em;
+    }
+    .blur-strip {
+      height: 6em;
+    }
+  }
+  @media (max-width: 767px) {
+    .header {
+      padding: 1em;
+    }
+    .brand {
+      --brand-w: 9em;
+      --brand-y: 140%;
+    }
+    .header__cta {
+      gap: 0.5em;
+    }
+  }
+  @media (max-width: 479px) {
+    .brand {
+      --brand-y: 180%;
+    }
+  }
+</style>

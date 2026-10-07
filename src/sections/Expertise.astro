@@ -1,0 +1,174 @@
+---
+/**
+ * Numbered areas of expertise on blue. On wide screens the section pins and each scroll step
+ * closes one panel as the next opens (src/motion/expertise.ts); elsewhere it is a plain list.
+ */
+import Plate from '../components/Plate.astro'
+import { expertise } from '../data/expertise'
+---
+
+<section class="xp" data-xp data-theme="light" aria-label="Expertise">
+  <div class="xp__sticky">
+    <div class="xp__list" data-xp-list>
+      {
+        expertise.map((area, i) => (
+          <article class="xp__item" data-xp-item>
+            <div class="xp__row" data-xp-row>
+              <span class="xp__num" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <h3 class="xp__title">{area.title}</h3>
+            </div>
+            <div class="xp__visual" data-xp-visual>
+              <p class="xp__desc">{area.text}</p>
+              <div class="xp__img" data-xp-img>
+                {area.image ? (
+                  <img src={area.image} alt={area.alt ?? ''} loading="lazy" draggable="false" />
+                ) : (
+                  <Plate label={area.title} seed={31 + i * 7} />
+                )}
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  /* The plain list: used on small screens, with reduced motion and without JS. */
+  .xp {
+    position: relative;
+    width: 100%;
+    background: var(--c-blue);
+    color: var(--c-silver);
+  }
+  .xp__sticky {
+    position: relative;
+    width: 100%;
+  }
+  .xp__list {
+    position: relative;
+    width: 100%;
+  }
+  .xp__item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .xp__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+    padding: 1em 2em;
+    border-top: 0.09375em solid var(--c-silver);
+    border-bottom: 0.09375em solid var(--c-silver);
+  }
+  .xp__num {
+    font-size: 3.5em;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .xp__title {
+    font-size: 2.5em;
+    font-weight: 700;
+    text-align: right;
+    text-transform: uppercase;
+  }
+  .xp__visual {
+    position: relative;
+    display: grid;
+    grid-template-columns: 29% 71%;
+    width: 100%;
+    overflow: hidden;
+  }
+  .xp__desc {
+    align-self: end;
+    padding: 2em;
+  }
+  .xp__img {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+  .xp__img > img,
+  .xp__img > .plate {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Pinned (wide screens with motion): panels are absolutely placed in heights set by the script. */
+  .xp.is-pinned {
+    height: 100vh;
+    overflow: hidden;
+  }
+  /* The top band stays clear for the fixed header; rows scroll up under it as they leave. */
+  .xp.is-pinned .xp__sticky {
+    height: 100%;
+    padding-top: 4.75em;
+    overflow: hidden;
+  }
+  .xp.is-pinned .xp__list {
+    will-change: transform;
+  }
+  .xp.is-pinned .xp__visual {
+    display: block;
+  }
+  .xp.is-pinned .xp__desc {
+    position: absolute;
+    left: 2em;
+    bottom: 2em;
+    z-index: 1;
+    width: 25%;
+    padding: 0;
+  }
+  .xp.is-pinned .xp__img {
+    position: absolute;
+    top: 0;
+    left: 29%;
+    z-index: 2;
+    width: 71%;
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  @media (max-width: 991px) {
+    .xp__row {
+      padding: 0.75em 1.5em;
+    }
+    .xp__num {
+      font-size: 2.625em;
+    }
+    .xp__title {
+      font-size: 1.875em;
+    }
+    .xp__visual {
+      display: flex;
+      flex-direction: column;
+    }
+    .xp__img {
+      order: -1;
+      width: 100%;
+    }
+    .xp__desc {
+      padding: 2.5em 1.5em 3em;
+    }
+  }
+  @media (max-width: 767px) {
+    .xp__row {
+      padding: 0.75em 1em;
+    }
+    .xp__num {
+      font-size: 1.97em;
+    }
+    .xp__title {
+      font-size: 1.25em;
+    }
+    .xp__desc {
+      padding: 2em 1em 2.5em;
+    }
+  }
+</style>

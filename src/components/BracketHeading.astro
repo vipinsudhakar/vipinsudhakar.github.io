@@ -1,0 +1,45 @@
+---
+/** A heading set between [ brackets ] that slide in from the sides as it scrolls into view. */
+interface Props {
+  tag?: 'h2' | 'h3' | 'p'
+  class?: string
+  id?: string
+}
+const { tag: Tag = 'h2', class: className, id } = Astro.props
+---
+
+<Tag class:list={['bracket-h', className]} id={id} data-bracket>
+  <span class="bracket-h__b is-left" data-bracket-l aria-hidden="true">[</span><slot /><span
+    class="bracket-h__b is-right"
+    data-bracket-r
+    aria-hidden="true">]</span
+  >
+</Tag>
+
+<style is:global>
+  .bracket-h {
+    font-size: 4.375em;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .bracket-h__b {
+    display: inline-block;
+    font-weight: 300;
+  }
+  .bracket-h__b.is-left {
+    margin-right: 0.25em;
+  }
+  .bracket-h__b.is-right {
+    margin-left: 0.25em;
+  }
+  @media (max-width: 991px) {
+    .bracket-h {
+      font-size: 3.28em;
+    }
+  }
+  @media (max-width: 767px) {
+    .bracket-h {
+      font-size: 2.46em;
+    }
+  }
+</style>

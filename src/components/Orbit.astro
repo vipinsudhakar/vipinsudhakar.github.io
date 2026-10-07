@@ -1,0 +1,388 @@
+---
+/**
+ * Project cards on a slowly turning orbit (src/motion/orbit.ts). The front card opens up and plays
+ * its preview; the panel on the left tells you what it is. With few projects the ring repeats them
+ * so it never looks empty, while the counter and the text only ever show the real ones.
+ */
+import Plate from './Plate.astro'
+import { projects } from '../data/projects'
+
+const MIN_TILES = 5
+const repeats = Math.max(1, Math.ceil(MIN_TILES / projects.length))
+// Each tile's project index. Only the front tile can be reached; the rest are inert
+// (set here for the first paint, then kept up to date by the script).
+const tiles = Array.from({ length: projects.length * repeats }, (_, i) => i % projects.length)
+const pad = (n: number) => String(n).padStart(2, '0')
+---
+
+<div class="orbit" data-orbit>
+  <div class="orbit__grid">
+    <div class="orbit__info">
+      <p class="orbit__count" aria-hidden="true">
+        <span class="orbit__count-col"><span class="orbit__count-num" data-orbit-current>01</span></span>
+        <span class="orbit__divider"></span>
+        <span class="orbit__count-col"><span class="orbit__count-num">{pad(projects.length)}</span></span>
+      </p>
+      <div class="orbit__bottom">
+        <div class="orbit__texts" aria-live="polite">
+          {
+            projects.map((p, i) => (
+              <article class="orbit__text" data-orbit-text aria-hidden={i === 0 ? undefined : 'true'}>
+                <h3 class="orbit__title" data-orbit-reveal>
+                  {p.title}
+                  {p.status === 'building' && <span class="orbit__tag">Building</span>}
+                </h3>
+                <p class="orbit__blurb" data-orbit-reveal>
+                  {p.blurb}
+                </p>
+                <ul class="orbit__meta" data-orbit-fade>
+                  {p.liveUrl && (
+                    <li>
+                      <a data-underline href={p.liveUrl} target="_blank" rel="noopener">
+                        Live demo ↗
+                      </a>
+                    </li>
+                  )}
+                  {p.repoUrl && (
+                    <li>
+                      <a data-underline href={p.repoUrl} target="_blank" rel="noopener">
+                        Source ↗
+                      </a>
+                    </li>
+                  )}
+                  <li class="orbit__stack">{p.stack.join(' · ')}</li>
+                </ul>
+              </article>
+            ))
+          }
+        </div>
+        <div class="orbit__nav">
+          <button class="orbit__btn" data-orbit-btn="prev" aria-label="Previous project">
+            <svg class="orbit__arrow" viewBox="0 0 17 12" aria-hidden="true" focusable="false">
+              <path d="M16 6H1.5M6.5 1 1.5 6l5 5"></path>
+            </svg>
+            <span class="orbit__corners" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          </button>
+          <button class="orbit__btn" data-orbit-btn="next" aria-label="Next project">
+            <svg class="orbit__arrow is-next" viewBox="0 0 17 12" aria-hidden="true" focusable="false">
+              <path d="M16 6H1.5M6.5 1 1.5 6l5 5"></path>
+            </svg>
+            <span class="orbit__corners" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="orbit__stage">
+      <div class="orbit__list" data-orbit-list>
+        {
+          tiles.map((index, i) => {
+            const p = projects[index]
+            return (
+              <div class="orbit__tile" data-orbit-tile data-project={index} inert={i === 0 ? undefined : true}>
+                <a
+                  class="orbit__card"
+                  data-orbit-card
+                  href={p.liveUrl ?? p.repoUrl ?? '#projects'}
+                  target="_blank"
+                  rel="noopener"
+                  aria-label={`Open ${p.title}`}
+                >
+                  <span class="orbit__mask">
+                    {p.poster ? (
+                      <img src={p.poster} alt="" loading="lazy" draggable="false" />
+                    ) : (
+                      <Plate label={p.title} seed={13 + index * 9} />
+                    )}
+                    {p.video && (
+                      <video data-orbit-video muted loop playsinline preload="none" poster={p.poster}>
+                        <source src={p.video} type="video/webm" />
+                      </video>
+                    )}
+                  </span>
+                </a>
+              </div>
+            )
+          })
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  .orbit {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 85.5dvh;
+    min-height: 38em;
+    max-height: 57em;
+    padding: 1em;
+  }
+  .orbit__grid {
+    display: grid;
+    grid-template-columns: minmax(16em, 0.7fr) minmax(0, 1.3fr);
+    align-items: center;
+    gap: 1em;
+    width: 100%;
+    height: 100%;
+  }
+  .orbit__info {
+    position: relative;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 4em;
+    height: 100%;
+  }
+  .orbit__count {
+    display: flex;
+    align-items: center;
+    gap: 0.2em;
+    font-size: 4em;
+    line-height: 1;
+  }
+  .orbit__count-col {
+    position: relative;
+    overflow: hidden;
+  }
+  .orbit__count-num {
+    display: block;
+    width: 2ch;
+  }
+  .orbit__divider {
+    width: 2px;
+    height: 0.75em;
+    background: currentColor;
+    rotate: 15deg;
+  }
+  .orbit__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+  }
+  .orbit__texts {
+    display: grid;
+    max-width: 28em;
+  }
+  .orbit__text {
+    grid-area: 1 / 1;
+  }
+  .orbit__text + .orbit__text {
+    visibility: hidden;
+  }
+  .orbit__title {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    font-size: 2em;
+    text-transform: uppercase;
+  }
+  .orbit__tag {
+    padding: 0.2em 0.5em;
+    border: 1px solid currentColor;
+    border-radius: 2em;
+    font-size: 0.35em;
+    font-weight: 400;
+  }
+  .orbit__blurb {
+    margin-top: 0.6em;
+  }
+  .orbit__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em 1.25em;
+    margin-top: 1.1em;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9em;
+    text-transform: uppercase;
+  }
+  .orbit__stack {
+    flex-basis: 100%;
+    opacity: 0.6;
+  }
+  .orbit__nav {
+    display: flex;
+    gap: 2em;
+  }
+  .orbit__btn {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3.5em;
+    height: 3.5em;
+    border: 1px solid rgb(42 64 147 / 0.2);
+    border-left-color: rgb(42 64 147 / 0.6);
+    border-radius: 0.4em;
+    color: var(--c-blue);
+    transition:
+      transform 0.475s var(--ease-house),
+      opacity 0.475s var(--ease-house);
+  }
+  .orbit__arrow {
+    width: 1em;
+    height: 0.75em;
+    overflow: visible;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .orbit__arrow.is-next {
+    rotate: 180deg;
+  }
+  .orbit__corners {
+    position: absolute;
+    inset: -1px;
+    transition: transform 0.475s var(--ease-house);
+  }
+  .orbit__corners i {
+    position: absolute;
+    width: 1em;
+    height: 1em;
+    border-top: 1px solid var(--c-blue);
+    border-left: 1px solid var(--c-blue);
+    border-top-left-radius: 0.4em;
+  }
+  .orbit__corners i:nth-child(1) {
+    top: 0;
+    left: 0;
+  }
+  .orbit__corners i:nth-child(2) {
+    top: 0;
+    right: 0;
+    rotate: 90deg;
+  }
+  .orbit__corners i:nth-child(3) {
+    right: 0;
+    bottom: 0;
+    rotate: 180deg;
+  }
+  .orbit__corners i:nth-child(4) {
+    bottom: 0;
+    left: 0;
+    rotate: -90deg;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .orbit__nav:has(.orbit__btn:hover) .orbit__btn {
+      opacity: 0.4;
+    }
+    .orbit__btn:hover {
+      opacity: 1 !important;
+      transform: scale(0.85);
+    }
+    .orbit__btn:hover .orbit__corners {
+      transform: scale(1.4);
+    }
+  }
+
+  .orbit__stage {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+  .orbit__list {
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
+  .orbit__tile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-area: 1 / 1;
+    will-change: transform, filter;
+  }
+  .orbit__tile:first-child {
+    z-index: 2;
+  }
+  /* --grow enlarges the front card; --reveal (0 to 1) opens its letterbox. */
+  .orbit__card {
+    --grow: 1;
+    --reveal: 0;
+    position: relative;
+    display: block;
+    width: calc(clamp(15em, 24vw, 30em) * var(--grow));
+    aspect-ratio: 4 / 3;
+  }
+  .no-js .orbit__tile:first-child .orbit__card {
+    --reveal: 1;
+  }
+  .orbit__mask {
+    position: absolute;
+    inset: 0;
+    display: block;
+    overflow: hidden;
+    border-radius: 0.65em;
+    clip-path: inset(calc(18% * (1 - var(--reveal))) 0 round 0.65em);
+  }
+  .orbit__mask > img,
+  .orbit__mask > video,
+  .orbit__mask > .plate {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 991px) {
+    .orbit {
+      height: 64dvh;
+      min-height: 34em;
+      font-size: 0.75em;
+    }
+    .orbit__count {
+      font-size: 3em;
+    }
+    .orbit__btn {
+      width: 3em;
+      height: 3em;
+    }
+    .orbit__nav {
+      gap: 1.5em;
+    }
+  }
+  @media (max-width: 767px) {
+    .orbit {
+      height: auto;
+      min-height: 0;
+      max-height: none;
+      padding: 0;
+      font-size: 1em;
+    }
+    .orbit__grid {
+      display: flex;
+      flex-direction: column;
+      gap: 2em;
+    }
+    .orbit__stage {
+      height: 72vw;
+      min-height: 16em;
+    }
+    .orbit__info {
+      order: 2;
+      gap: 1.5em;
+      width: 100%;
+      height: auto;
+    }
+    .orbit__count {
+      font-size: 2.25em;
+    }
+    .orbit__card {
+      width: calc(clamp(13em, 62vw, 19em) * var(--grow));
+    }
+    .orbit__title {
+      font-size: 1.6em;
+    }
+  }
+</style>

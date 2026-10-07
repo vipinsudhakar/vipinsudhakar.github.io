@@ -1,0 +1,85 @@
+---
+import BracketHeading from '../components/BracketHeading.astro'
+import Button from '../components/Button.astro'
+import { copy } from '../data/copy'
+import { site } from '../data/site'
+---
+
+<section class="about" id="about" data-theme="dark">
+  <div class="about__head">
+    <p class="about__title" data-split-rolling>{copy.about.headline}</p>
+    <p class="about__aside" data-split-lines>{copy.about.aside}</p>
+  </div>
+  <div class="about__body">
+    <BracketHeading>{copy.about.heading}</BracketHeading>
+    {copy.about.paragraphs.map((text) => <p data-split-lines>{text}</p>)}
+    <div class="btn-row">
+      <Button href="#contact" anchor variant="blue">Let's talk</Button>
+      {
+        site.resume && (
+          <Button href={site.resume} variant="ink" external>
+            Resume
+          </Button>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .about {
+    padding: 10em 2em 0;
+  }
+  .about__head {
+    width: 100%;
+    max-width: 42em;
+  }
+  .about__title {
+    font-size: 4.5em;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .about__aside {
+    max-width: 25em;
+    margin-top: 1.25em;
+  }
+  .about__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3em;
+    width: 50%;
+    margin: 7.5em 0 0 auto;
+  }
+
+  @media (max-width: 991px) {
+    .about {
+      padding: 7.5em 1.5em 0;
+    }
+    .about__head {
+      max-width: 31.5em;
+    }
+    .about__title {
+      font-size: 3.375em;
+    }
+    .about__body {
+      gap: 2.25em;
+      width: 80%;
+      margin-top: 5.625em;
+    }
+  }
+  @media (max-width: 767px) {
+    .about {
+      padding: 6em 1em 0;
+    }
+    .about__title {
+      font-size: 2.5em;
+    }
+    .about__body {
+      gap: 1.75em;
+      width: 100%;
+      margin-top: 4em;
+    }
+  }
+</style>

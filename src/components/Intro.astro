@@ -1,0 +1,82 @@
+---
+/**
+ * The load intro: a blue scribble covers the screen, the signature writes itself and erases,
+ * then the scribble pulls away to reveal the page. Timeline in src/motion/intro.ts.
+ * Hidden without JS or with reduced motion; a CSS failsafe removes it if the scripts never run.
+ */
+import { signature } from '../data/signature'
+import { screenScribble } from '../lib/scribble'
+
+const path = screenScribble({ seed: 3 })
+---
+
+<div class="intro" data-intro aria-hidden="true">
+  <svg class="intro__scribble" viewBox="0 0 3200 3100" preserveAspectRatio="none" focusable="false">
+    <path d={path} data-intro-scribble></path>
+  </svg>
+  {
+    signature.paths.length > 0 && (
+      <svg class="intro__signature" viewBox={signature.viewBox} data-intro-signature focusable="false">
+        {signature.paths.map((d) => (
+          <path d={d} />
+        ))}
+      </svg>
+    )
+  }
+</div>
+
+<style is:global>
+  .intro {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: none;
+    pointer-events: none;
+    overflow: clip;
+  }
+  .js .intro {
+    display: block;
+    animation: failsafe-hide 0s linear 6s forwards;
+  }
+  @keyframes failsafe-hide {
+    to {
+      visibility: hidden;
+    }
+  }
+  .intro__scribble {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    color: var(--c-blue);
+  }
+  .intro__scribble path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 80%;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .intro__signature {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(40vw, 35em);
+    translate: -50% -50%;
+    color: var(--c-silver);
+    visibility: hidden;
+  }
+  .intro__signature path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .js .intro {
+      display: none;
+    }
+  }
+</style>

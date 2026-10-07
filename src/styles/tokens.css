@@ -1,0 +1,51 @@
+/* ---------------------------------------------------------------------------------------------
+   Colour and type tokens, plus the fluid scale.
+
+   The scale sets the body font size from the viewport width, so every size written in em grows
+   and shrinks with the screen. Each breakpoint has a design width ("ideal") at which 1em = 16px,
+   and a range it is clamped to.
+   --------------------------------------------------------------------------------------------- */
+:root {
+  --c-silver: #e2e1e1;
+  --c-ink: #080912;
+  --c-blue: #2a4093;
+  --c-deep: #273879;
+  --c-white: #ffffff;
+
+  --font: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
+  --ease-house: cubic-bezier(0.625, 0.05, 0, 1);
+
+  /* Desktop: designed at 1440 wide. */
+  --scale-ideal: 1440;
+  --scale-min: 992px;
+  --scale-max: 1920px;
+  --scale-width: clamp(var(--scale-min), 100vw, var(--scale-max));
+  --size-font: calc(var(--scale-width) / (var(--scale-ideal) / 16));
+}
+
+/* Tablet: designed at 834. */
+@media (max-width: 991px) {
+  :root {
+    --scale-ideal: 834;
+    --scale-min: 768px;
+    --scale-max: 991px;
+  }
+}
+
+/* Phone, landscape: designed at 550. */
+@media (max-width: 767px) {
+  :root {
+    --scale-ideal: 550;
+    --scale-min: 480px;
+    --scale-max: 767px;
+  }
+}
+
+/* Phone, portrait: designed at 402. */
+@media (max-width: 479px) {
+  :root {
+    --scale-ideal: 402;
+    --scale-min: 320px;
+    --scale-max: 479px;
+  }
+}

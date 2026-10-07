@@ -1,0 +1,125 @@
+---
+/**
+ * The pill button. On hover (mouse only) a scribble stroke draws across it in the hover colour,
+ * like filling it in with a marker; see src/motion/buttons.ts.
+ */
+import { buttonScribble } from '../lib/scribble'
+
+interface Props {
+  href: string
+  variant?: 'ink' | 'blue' | 'silver' | 'white'
+  /** Opens in a new tab. */
+  external?: boolean
+  /** Filled in by the browser from the encoded contact details; href is the no-JS fallback. */
+  contact?: 'email' | 'phone' | 'whatsapp'
+  /** An in-page link (#section), scrolled to smoothly. */
+  anchor?: boolean
+  class?: string
+}
+const { href, variant = 'ink', external = false, contact, anchor = false, class: className } = Astro.props
+const path = buttonScribble()
+---
+
+<a
+  class:list={['btn', className]}
+  href={href}
+  data-btn
+  data-variant={variant}
+  data-contact={contact}
+  data-anchor={anchor ? '' : undefined}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener' : undefined}
+>
+  <span class="btn__bg" aria-hidden="true"></span>
+  <svg class="btn__ink" viewBox="0 0 200 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path d={path}></path>
+  </svg>
+  <span class="btn__label"><slot /></span>
+</a>
+
+<style is:global>
+  .btn {
+    --btn-fg: var(--c-white);
+    --btn-bg: var(--c-ink);
+    --btn-hover-fg: var(--c-white);
+    --btn-hover-bg: var(--c-blue);
+    position: relative;
+    display: inline-grid;
+    isolation: isolate;
+    border-radius: 2.5em;
+    overflow: clip;
+    color: var(--btn-fg);
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: scale 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn[data-variant='blue'] {
+    --btn-bg: var(--c-blue);
+    --btn-hover-bg: var(--c-ink);
+  }
+  .btn[data-variant='silver'] {
+    --btn-fg: var(--c-ink);
+    --btn-bg: var(--c-silver);
+  }
+  .btn[data-variant='white'] {
+    --btn-fg: var(--c-ink);
+    --btn-bg: var(--c-white);
+  }
+  .btn__bg {
+    grid-area: 1 / 1;
+    border-radius: inherit;
+    background: var(--btn-bg);
+    transition: background-color 0.3s;
+  }
+  .btn__ink {
+    position: absolute;
+    inset: -15% -8%;
+    width: 116%;
+    max-width: none;
+    height: 130%;
+    color: var(--btn-hover-bg);
+    pointer-events: none;
+  }
+  .btn__ink path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 0;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .btn__label {
+    position: relative;
+    z-index: 1;
+    grid-area: 1 / 1;
+    padding: 0.75em 1em;
+    transition: color 0.35s;
+  }
+  .btn.is-inked .btn__label {
+    color: var(--btn-hover-fg);
+  }
+  .btn:active {
+    scale: 0.96 0.93;
+  }
+  .btn:focus-visible {
+    outline-color: var(--btn-hover-bg);
+  }
+
+  /* Without the scribble (touch screens, reduced motion, no JS) the colour simply swaps. */
+  .btn:not([data-inkable]):hover .btn__bg,
+  .btn:not([data-inkable]):focus-visible .btn__bg {
+    background: var(--btn-hover-bg);
+  }
+  .btn:not([data-inkable]):hover .btn__label,
+  .btn:not([data-inkable]):focus-visible .btn__label {
+    color: var(--btn-hover-fg);
+  }
+
+  @media (max-width: 991px) {
+    .btn {
+      font-size: 0.875em;
+    }
+  }
+</style>

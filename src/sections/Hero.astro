@@ -1,0 +1,183 @@
+---
+import Globe from '../components/Globe.astro'
+import Wordmark from '../components/Wordmark.astro'
+import { site } from '../data/site'
+import { screenScribble } from '../lib/scribble'
+
+// The same path the intro wipes with, left behind as a faint pencil line.
+const placeholder = screenScribble({ seed: 3 })
+---
+
+<section class="hero" id="top" data-hero data-theme="dark" data-parallax>
+  <h1 class="sr-only">{site.name}, software developer</h1>
+  <div class="hero__bg" data-parallax-target>
+    {
+      site.heroImage ? (
+        <img src={site.heroImage.src} alt={site.heroImage.alt} fetchpriority="high" draggable="false" />
+      ) : (
+        <div class="hero__placeholder" aria-hidden="true">
+          <svg viewBox="0 0 3200 3100" preserveAspectRatio="none" focusable="false">
+            <path d={placeholder} />
+          </svg>
+        </div>
+      )
+    }
+  </div>
+  <!-- Static masthead for reduced motion and no JS; otherwise the header's wordmark plays this part. -->
+  <Wordmark class="hero__mark" decorative />
+  <div class="hero__content">
+    <p class="hero__status" data-intro-reveal>
+      <span class="hero__dot" aria-hidden="true"></span>
+      <span class="hero__label">{site.status}</span>
+    </p>
+    <div class="hero__locate" data-intro-reveal>
+      <p class="hero__label is-right">
+        {site.location.map((line) => <span>{line}</span>)}
+      </p>
+      <Globe />
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .hero {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    height: 100svh;
+    padding: 4em 2em 2em;
+    overflow: hidden;
+  }
+  .hero__bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    height: 120%;
+    pointer-events: none;
+  }
+  .hero__bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__placeholder {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(90% 75% at 50% 45%, #eaeae9 0%, var(--c-silver) 100%);
+    color: var(--c-blue);
+  }
+  .hero__placeholder svg {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+  }
+  .hero__placeholder path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    opacity: 0.2;
+    vector-effect: non-scaling-stroke;
+  }
+  .hero__mark {
+    position: absolute;
+    top: 6.25em;
+    left: 2em;
+    width: calc(100% - 4em);
+    display: none;
+  }
+  .no-js .hero__mark {
+    display: block;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__mark {
+      display: block;
+    }
+  }
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+    width: 100%;
+  }
+  .hero__label {
+    font-size: 1em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+  .hero__label.is-right {
+    text-align: right;
+  }
+  .hero__label > span {
+    display: block;
+  }
+  .hero__status {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.25em 0.6em;
+    border: 1px solid var(--c-ink);
+    border-radius: 2em;
+    background: var(--c-silver);
+    font-size: 1em;
+  }
+  .hero__dot {
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: var(--c-ink);
+  }
+  .hero__locate {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+  }
+
+  @media (max-width: 991px) {
+    .hero {
+      padding: 3.5em 1.5em 1.5em;
+    }
+    .hero__mark {
+      top: 4em;
+      left: 1.5em;
+      width: calc(100% - 3em);
+    }
+    .hero__content {
+      font-size: 0.75em;
+    }
+  }
+  @media (max-width: 767px) {
+    .hero {
+      padding: 3.5em 1em 1em;
+    }
+    .hero__mark {
+      top: 4.5em;
+      left: 1em;
+      width: calc(100% - 2em);
+    }
+    .hero__content {
+      font-size: 0.8em;
+    }
+  }
+  @media (max-width: 479px) {
+    .hero__content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75em;
+      font-size: 0.85em;
+    }
+    .hero__locate {
+      order: -1;
+      flex-direction: row-reverse;
+    }
+    .hero__label.is-right {
+      text-align: left;
+    }
+  }
+</style>

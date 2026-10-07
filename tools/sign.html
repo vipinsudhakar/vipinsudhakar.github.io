@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Signature pad</title>
+    <style>
+      :root {
+        --silver: #e2e1e1;
+        --ink: #080912;
+        --blue: #2a4093;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px 16px;
+        background: var(--blue);
+        color: var(--silver);
+        font: 16px/1.45 system-ui, sans-serif;
+      }
+      main {
+        display: grid;
+        gap: 16px;
+        width: min(100%, 900px);
+      }
+      h1 {
+        margin: 0;
+        font-size: 22px;
+      }
+      p {
+        margin: 0;
+        max-width: 60ch;
+        opacity: 0.85;
+      }
+      #pad {
+        width: 100%;
+        aspect-ratio: 2 / 1;
+        border: 1px dashed rgb(226 225 225 / 0.45);
+        border-radius: 12px;
+        background: rgb(255 255 255 / 0.05);
+        cursor: crosshair;
+        touch-action: none;
+      }
+      #pad path {
+        fill: none;
+        stroke: var(--silver);
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      button {
+        padding: 8px 18px;
+        border: 0;
+        border-radius: 99px;
+        background: var(--silver);
+        color: var(--ink);
+        font: inherit;
+        cursor: pointer;
+      }
+      button.primary {
+        background: var(--ink);
+        color: var(--silver);
+      }
+      textarea {
+        width: 100%;
+        height: 150px;
+        padding: 10px;
+        border: 0;
+        border-radius: 8px;
+        background: rgb(0 0 0 / 0.25);
+        color: var(--silver);
+        font: 12px/1.4 ui-monospace, Consolas, monospace;
+      }
+      #status {
+        min-height: 1.45em;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Sign here</h1>
+      <p>
+        Draw your signature with a mouse, pen or finger. The intro writes it stroke by stroke in the
+        order you draw, so sign the way you normally would. Then press Copy and paste the result over
+        the object in <code>src/data/signature.ts</code>.
+      </p>
+      <svg id="pad" viewBox="0 0 600 300" aria-label="Signature drawing area"></svg>
+      <div class="row">
+        <button id="undo" type="button">Undo stroke</button>
+        <button id="clear" type="button">Clear</button>
+        <button id="replay" type="button">Replay</button>
+        <button id="copy" class="primary" type="button">Copy</button>
+      </div>
+      <p id="status" role="status"></p>
+      <textarea id="out" readonly aria-label="Code to paste into src/data/signature.ts"></textarea>
+    </main>
+
+    <script>
+      const pad = document.getElementById('pad')
+      const out = document.getElementById('out')
+      const status = document.getElementById('status')
+      const NS = 'http://www.w3.org/2000/svg'
+      const strokes = [] // arrays of [x, y] in viewBox units
+      let live = null
+
+      const toPad = (event) => {
+        const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(pad.getScreenCTM().inverse())
+        return [point.x, point.y]
+      }
+      const round = (n) => Math.round(n * 10) / 10
+
+      // Drops points that sit on a near-straight line (Ramer–Douglas–Peucker).
+      function simplify(points, tolerance = 0.8) {
+        if (points.length < 3) return points
+        const [ax, ay] = points[0]
+        const [bx, by] = points[points.length - 1]
+        const length = Math.hypot(bx - ax, by - ay) || 1
+        let furthest = 0
+        let index = 0
+        for (let i = 1; i < points.length - 1; i++) {
+          const [px, py] = points[i]
+          const d = Math.abs((by - ay) * px - (bx - ax) * py + bx * ay - by * ax) / length
+          if (d > furthest) {
+            furthest = d
+            index = i
+          }
+        }
+        if (furthest <= tolerance) return [points[0], points[points.length - 1]]
+        return [...simplify(points.slice(0, index + 1), tolerance).slice(0, -1), ...simplify(points.slice(index), tolerance)]
+      }
+
+      // A smooth path through the points: quadratic curves that meet at the midpoints.
+      function toPath(points, dx = 0, dy = 0) {
+        const p = points.map(([x, y]) => [round(x - dx), round(y - dy)])
+        if (p.length === 1) return `M${p[0][0]} ${p[0][1]}l0.1 0`
+        let d = `M${p[0][0]} ${p[0][1]}`
+        for (let i = 1; i < p.length - 1; i++) {
+          const mx = round((p[i][0] + p[i + 1][0]) / 2)
+          const my = round((p[i][1] + p[i + 1][1]) / 2)
+          d += `Q${p[i][0]} ${p[i][1]} ${mx} ${my}`
+        }
+        const last = p[p.length - 1]
+        return d + `L${last[0]} ${last[1]}`
+      }
+
+      function render() {
+        pad.replaceChildren(
+          ...strokes.map((points) => {
+            const path = document.createElementNS(NS, 'path')
+            path.setAttribute('d', toPath(points))
+            return path
+          }),
+        )
+        if (!strokes.length) {
+          out.value = ''
+          return
+        }
+        // Crop the viewBox to the ink, plus room for the stroke width.
+        const all = strokes.flat()
+        const pad8 = 8
+        const minX = Math.min(...all.map((p) => p[0])) - pad8
+        const minY = Math.min(...all.map((p) => p[1])) - pad8
+        const width = Math.max(...all.map((p) => p[0])) - minX + pad8
+        const height = Math.max(...all.map((p) => p[1])) - minY + pad8
+        const paths = strokes.map((points) => `    '${toPath(simplify(points), minX, minY)}',`)
+        out.value = [
+          "export const signature: { viewBox: string; paths: string[] } = {",
+          `  viewBox: '0 0 ${Math.ceil(width)} ${Math.ceil(height)}',`,
+          '  paths: [',
+          ...paths,
+          '  ],',
+          '}',
+          '',
+        ].join('\n')
+      }
+
+      pad.addEventListener('pointerdown', (event) => {
+        pad.setPointerCapture(event.pointerId)
+        live = [toPad(event)]
+        strokes.push(live)
+        render()
+      })
+      pad.addEventListener('pointermove', (event) => {
+        if (!live) return
+        const [x, y] = toPad(event)
+        const [lx, ly] = live[live.length - 1]
+        if (Math.hypot(x - lx, y - ly) < 1.5) return
+        live.push([x, y])
+        pad.lastElementChild?.setAttribute('d', toPath(live))
+      })
+      const end = () => {
+        if (!live) return
+        live = null
+        render()
+      }
+      pad.addEventListener('pointerup', end)
+      pad.addEventListener('pointercancel', end)
+
+      document.getElementById('undo').addEventListener('click', () => {
+        strokes.pop()
+        render()
+      })
+      document.getElementById('clear').addEventListener('click', () => {
+        strokes.length = 0
+        render()
+      })
+      document.getElementById('replay').addEventListener('click', async () => {
+        for (const path of pad.querySelectorAll('path')) {
+          const length = path.getTotalLength()
+          path.style.transition = 'none'
+          path.style.strokeDasharray = `${length}`
+          path.style.strokeDashoffset = `${length}`
+        }
+        for (const path of pad.querySelectorAll('path')) {
+          path.getBoundingClientRect()
+          path.style.transition = 'stroke-dashoffset 0.4s linear'
+          path.style.strokeDashoffset = '0'
+          await new Promise((resolve) => setTimeout(resolve, 400))
+        }
+      })
+      document.getElementById('copy').addEventListener('click', async () => {
+        if (!out.value) {
+          status.textContent = 'Sign first.'
+          return
+        }
+        try {
+          await navigator.clipboard.writeText(out.value)
+        } catch {
+          out.select()
+          document.execCommand('copy')
+        }
+        status.textContent = 'Copied. Paste it over the object in src/data/signature.ts.'
+      })
+    </script>
+  </body>
+</html>

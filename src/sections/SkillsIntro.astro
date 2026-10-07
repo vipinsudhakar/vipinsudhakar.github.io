@@ -1,0 +1,94 @@
+---
+/**
+ * The hand-off into Expertise: the screen pins on a big statement while a blue scribble draws
+ * across it and thickens until the whole screen is blue (src/motion/scroll-draw.ts).
+ */
+import BracketHeading from '../components/BracketHeading.astro'
+import { copy } from '../data/copy'
+import { screenScribble } from '../lib/scribble'
+
+const path = screenScribble({ seed: 8 })
+---
+
+<div class="skills-intro" id="expertise" data-theme="dark" data-scroll-draw>
+  <div class="skills-intro__inner" data-scroll-draw-content>
+    <p class="skills-intro__big">
+      <span class="skills-intro__line" data-split-rolling>{copy.skills.lead}</span>
+      <span class="skills-intro__line is-big" data-split-rolling>{copy.skills.big}</span>
+    </p>
+    <BracketHeading class="is-blue">{copy.skills.heading}</BracketHeading>
+  </div>
+  <div class="skills-intro__overlay" data-scroll-draw-overlay aria-hidden="true">
+    <svg viewBox="0 0 3200 3100" preserveAspectRatio="none" focusable="false">
+      <path d={path}></path>
+    </svg>
+  </div>
+</div>
+
+<style is:global>
+  .skills-intro {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow: clip;
+  }
+  .skills-intro__inner {
+    position: relative;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5em;
+    width: 100%;
+    height: 100dvh;
+    padding: 2em;
+    text-align: center;
+  }
+  .skills-intro__big {
+    font-size: 4.875em;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .skills-intro__line {
+    display: block;
+  }
+  .skills-intro__line.is-big {
+    font-size: 2em;
+  }
+  .skills-intro__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: clip;
+    pointer-events: none;
+  }
+  .skills-intro__overlay svg {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    color: var(--c-blue);
+  }
+  .skills-intro__overlay path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 0;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  @media (max-width: 991px) {
+    .skills-intro__inner {
+      padding: 1.5em;
+    }
+    .skills-intro__big {
+      font-size: 2.75em;
+    }
+  }
+  @media (max-width: 767px) {
+    .skills-intro__big {
+      font-size: 1.85em;
+    }
+  }
+</style>

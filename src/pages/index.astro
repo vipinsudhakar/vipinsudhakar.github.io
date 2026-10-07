@@ -1,0 +1,31 @@
+---
+import Header from '../components/Header.astro'
+import Intro from '../components/Intro.astro'
+import Base from '../layouts/Base.astro'
+import About from '../sections/About.astro'
+import Contact from '../sections/Contact.astro'
+import Expertise from '../sections/Expertise.astro'
+import Footer from '../sections/Footer.astro'
+import Hero from '../sections/Hero.astro'
+import Projects from '../sections/Projects.astro'
+import SkillsIntro from '../sections/SkillsIntro.astro'
+import Toolkit from '../sections/Toolkit.astro'
+---
+
+<Base>
+  <Intro />
+  <Header />
+  <main class="main">
+    <Hero />
+    <About />
+    <SkillsIntro />
+    <Expertise />
+    <Projects />
+    <Toolkit />
+    <Contact />
+    <Footer />
+  </main>
+  <script>
+    import '../motion/index'
+  </script>
+</Base>

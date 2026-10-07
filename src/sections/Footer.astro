@@ -1,0 +1,192 @@
+---
+/** Blue footer framed by thick brackets. On wider screens it slides out from under the page. */
+import Wordmark from '../components/Wordmark.astro'
+import { site } from '../data/site'
+
+const year = new Date().getFullYear()
+---
+
+<div class="footer-wrap" data-theme="light" data-footer>
+  <footer class="footer" data-footer-inner>
+    <div class="footer__top">
+      <span class="footer__bracket is-left" aria-hidden="true"></span>
+      <span class="footer__bracket is-right" aria-hidden="true"></span>
+      <div class="footer__cols">
+        <nav class="footer__col" aria-label="Social">
+          <p class="footer__label">Social</p>
+          <ul class="footer__list">
+            {
+              site.contact.linkedin && (
+                <li>
+                  <a data-underline href={site.contact.linkedin} target="_blank" rel="noopener">
+                    LinkedIn
+                  </a>
+                </li>
+              )
+            }
+            <li><a data-underline href={site.contact.github} target="_blank" rel="noopener">GitHub</a></li>
+          </ul>
+        </nav>
+        <nav class="footer__col" aria-label="Menu">
+          <p class="footer__label">Menu</p>
+          <ul class="footer__list">
+            {
+              site.nav.map((item) => (
+                <li>
+                  <a data-underline data-anchor href={item.href}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+        <div class="footer__col">
+          <p class="footer__label">Contact</p>
+          <ul class="footer__list">
+            <li><a data-underline data-contact="email" href="#contact">Email</a></li>
+            <li><a data-underline data-contact="whatsapp" href="#contact" target="_blank" rel="noopener">WhatsApp</a></li>
+            <li><a data-underline data-contact="phone" href="#contact">Phone</a></li>
+          </ul>
+        </div>
+      </div>
+      <Wordmark class="footer__mark" decorative />
+    </div>
+    <div class="footer__bar">
+      <p class="footer__small">© <span data-year>{year}</span> {site.name}</p>
+      <a class="footer__small" data-underline href="https://alejandroha.com/en" target="_blank" rel="noopener"
+        >Design inspired by alejandroha.com</a
+      >
+    </div>
+  </footer>
+</div>
+
+<style is:global>
+  .footer-wrap {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+  .footer {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 5em 2em;
+    background: var(--c-blue);
+    color: var(--c-silver);
+    font-weight: 650;
+  }
+  .footer__top {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 7.5em;
+    padding: 3em 2.5em;
+  }
+  .footer__bracket {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 3.5em;
+    border: 1em solid var(--c-silver);
+    pointer-events: none;
+  }
+  .footer__bracket.is-left {
+    left: 0;
+    border-right: 0;
+  }
+  .footer__bracket.is-right {
+    right: 0;
+    border-left: 0;
+  }
+  .footer__cols {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.5em 5em;
+  }
+  .footer__label {
+    font-size: 2em;
+    white-space: nowrap;
+  }
+  .footer__list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25em;
+    margin-top: 0.75em;
+    padding: 0;
+    list-style: none;
+  }
+  .footer__list a {
+    font-size: 1.25em;
+  }
+  .footer__mark {
+    color: var(--c-deep);
+  }
+  .footer__bar {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+    min-height: 2.5em;
+    padding: 0.5em 2em;
+    background: var(--c-deep);
+  }
+  .footer__small {
+    font-size: 1em;
+    font-weight: 200;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 991px) {
+    .footer {
+      padding: 3.75em 1.5em;
+    }
+    .footer__top {
+      gap: 5.625em;
+      padding: 2.25em 1.875em;
+    }
+    .footer__bracket {
+      width: 2.625em;
+      border-width: 0.75em;
+    }
+    .footer__label {
+      font-size: 1.5em;
+    }
+    .footer__list a {
+      font-size: 1em;
+    }
+    .footer__bar {
+      min-height: 2em;
+      padding: 0.375em 1.5em;
+    }
+    .footer__small {
+      font-size: 0.75em;
+    }
+  }
+  @media (max-width: 767px) {
+    .footer {
+      padding: 3em 1em 5em;
+    }
+    .footer__top {
+      gap: 3.5em;
+      padding: 2em 1.5em;
+    }
+    .footer__cols {
+      gap: 2em 3em;
+    }
+    .footer__bar {
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.5em;
+      padding: 0.75em 1em;
+    }
+  }
+</style>

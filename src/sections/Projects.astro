@@ -1,0 +1,67 @@
+---
+import BracketHeading from '../components/BracketHeading.astro'
+import Button from '../components/Button.astro'
+import Orbit from '../components/Orbit.astro'
+import { copy } from '../data/copy'
+import { site } from '../data/site'
+---
+
+<section class="projects" id="projects" data-theme="dark">
+  <header class="projects__head">
+    <BracketHeading>{copy.projects.heading}</BracketHeading>
+    <p class="projects__lead" data-split-rolling>{copy.projects.lead}</p>
+  </header>
+  <Orbit />
+  <div class="projects__cta">
+    <Button href={site.contact.github} variant="ink" external>More on GitHub</Button>
+  </div>
+</section>
+
+<style is:global>
+  .projects {
+    display: flex;
+    flex-direction: column;
+    gap: 5em;
+    padding: 7.5em 2em;
+  }
+  .projects__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2em;
+    text-align: center;
+  }
+  .projects__lead {
+    max-width: 14em;
+    font-size: 4em;
+    font-weight: 700;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+  .projects__cta {
+    display: flex;
+    justify-content: center;
+  }
+
+  @media (max-width: 991px) {
+    .projects {
+      gap: 4em;
+      padding: 5.625em 1.5em;
+    }
+    .projects__head {
+      gap: 1.5em;
+    }
+    .projects__lead {
+      font-size: 2.5em;
+    }
+  }
+  @media (max-width: 767px) {
+    .projects {
+      gap: 3em;
+      padding: 4.5em 1em;
+    }
+    .projects__lead {
+      font-size: 1.6em;
+    }
+  }
+</style>
