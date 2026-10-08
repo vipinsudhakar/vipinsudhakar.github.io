@@ -1,13 +1,20 @@
 ---
 /**
  * The "Send a message" box: a native dialog that posts to the Discord relay (relay/). Opened by
- * any [data-open-message] element; behaviour in src/motion/message.ts. Not rendered at all until
- * the relay's address is set in src/data/site.ts.
+ * any [data-open-message] element; behaviour and motion in src/motion/message.ts. Not rendered at
+ * all until the relay's address is set in src/data/site.ts.
+ *
+ * The dialog itself is a full-screen layer: a scrim, the panel, and a "morph" shape that carries
+ * the button you clicked into the panel (and back), so the box visibly comes from the button.
  */
 import { KINDS } from '../../relay/kinds.mjs'
 import { site } from '../data/site'
 import { inboxEndpoint } from '../lib/inbox'
+import { screenScribble } from '../lib/scribble'
 import Button from './Button.astro'
+
+// The blue stroke that sweeps across the panel when a message goes out.
+const sweep = screenScribble({ seed: 14, w: 400, h: 300, passes: 7 })
 ---
 
 {
@@ -20,23 +27,32 @@ import Button from './Button.astro'
       aria-labelledby="msg-title"
       data-state="idle"
     >
-      <div class="msg__panel">
-        <div class="msg__top">
+      <div class="msg__scrim" data-message-scrim />
+      <div class="msg__morph" data-message-morph aria-hidden="true" />
+
+      <div class="msg__panel" data-message-panel>
+        <div class="msg__top" data-message-step>
           <h2 class="msg__title" id="msg-title" tabindex="-1" autofocus>
             <span aria-hidden="true">[</span> Send a message <span aria-hidden="true">]</span>
           </h2>
           <button class="msg__close" type="button" data-message-close>
-            Close <span aria-hidden="true">✕</span>
+            Close
+            <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+              <path d="M2 2l8 8M10 2l-8 8" />
+            </svg>
           </button>
         </div>
 
         <form class="msg__form" data-message-form novalidate>
-          <p class="msg__lead">It lands straight in my Discord, so I'll see it quickly.</p>
+          <p class="msg__lead" data-message-step>
+            It lands straight in my Discord, so I'll see it quickly.
+          </p>
 
-          <div class="msg__row">
+          <div class="msg__row" data-message-step>
             <label class="msg__field">
               <span class="msg__label">Your name</span>
               <input name="name" type="text" autocomplete="name" required maxlength="80" />
+              <span class="msg__line" aria-hidden="true" />
             </label>
             <label class="msg__field">
               <span class="msg__label">How should I reply?</span>
@@ -49,12 +65,13 @@ import Button from './Button.astro'
                 maxlength="120"
                 placeholder="Email, Discord or phone"
               />
+              <span class="msg__line" aria-hidden="true" />
             </label>
           </div>
 
           {
             site.inbox.chooseKind && (
-              <fieldset class="msg__kinds">
+              <fieldset class="msg__kinds" data-message-step>
                 <legend class="msg__label">What's it about?</legend>
                 <div class="msg__chips">
                   {KINDS.map((kind, i) => (
@@ -68,11 +85,12 @@ import Button from './Button.astro'
             )
           }
 
-          <label class="msg__field">
+          <label class="msg__field" data-message-step>
             <span class="msg__label">
               Message <span class="msg__count" data-message-count aria-hidden="true">0 / 2000</span>
             </span>
-            <textarea name="message" rows="6" required minlength="10" maxlength="2000"></textarea>
+            <textarea name="message" rows="6" required minlength="10" maxlength="2000" />
+            <span class="msg__line" aria-hidden="true" />
           </label>
 
           {/* Left empty by people; bots that fill every field get dropped by the relay. */}
@@ -80,80 +98,95 @@ import Button from './Button.astro'
             Website <input name="website" type="text" tabindex="-1" autocomplete="off" />
           </label>
 
-          <div class="msg__actions">
-            <Button type="submit" variant="blue">Send message</Button>
-            <p class="msg__status" data-message-status role="status" aria-live="polite"></p>
+          <div class="msg__actions" data-message-step>
+            <Button type="submit" variant="blue">
+              <span class="msg__send-idle">Send message</span>
+              <span class="msg__send-busy" aria-hidden="true">
+                Sending<i>.</i><i>.</i><i>.</i>
+              </span>
+            </Button>
+            <p class="msg__status" data-message-status role="status" aria-live="polite" />
           </div>
         </form>
 
         <div class="msg__sent" data-message-sent>
-          <p class="msg__sent-title">Message sent</p>
-          <p>Thanks. I'll get back to you soon.</p>
-          <div class="btn-row">
-            <button class="msg__close is-block" type="button" data-message-close>Close</button>
-            <button class="msg__close is-block" type="button" data-message-again>Send another</button>
+          <svg class="msg__tick" viewBox="0 0 48 48" aria-hidden="true" focusable="false" data-message-step>
+            <path d="M9 25.5l9.5 9.5L39 13" />
+          </svg>
+          <p class="msg__sent-title" data-message-step>
+            Message sent
+          </p>
+          <p data-message-step>Thanks. I'll get back to you soon.</p>
+          <div class="btn-row" data-message-step>
+            <button class="msg__close is-block" type="button" data-message-close>
+              Close
+            </button>
+            <button class="msg__close is-block" type="button" data-message-again>
+              Send another
+            </button>
           </div>
         </div>
+
+        <svg class="msg__sweep" viewBox="0 0 400 300" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <path d={sweep} data-message-sweep />
+        </svg>
       </div>
     </dialog>
   )
 }
 
 <style is:global>
+  /* The dialog is a full-screen layer; the scrim and the panel are drawn inside it. */
   .msg {
-    width: min(46em, calc(100% - 2em));
+    position: fixed;
+    inset: 0;
+    width: 100%;
     max-width: none;
-    max-height: calc(100dvh - 2em);
-    margin: auto;
-    padding: 0;
-    overflow: auto;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 1em;
+    place-items: center;
+    overflow: hidden;
     border: 0;
-    border-radius: 0.9em;
-    background: var(--c-silver);
+    background: transparent;
     color: var(--c-ink);
-    overscroll-behavior: contain;
-    opacity: 0;
-    translate: 0 1.5em;
-    transition:
-      opacity 0.35s ease,
-      translate 0.55s var(--ease-house),
-      overlay 0.35s allow-discrete,
-      display 0.35s allow-discrete;
   }
   .msg[open] {
-    opacity: 1;
-    translate: 0 0;
-  }
-  @starting-style {
-    .msg[open] {
-      opacity: 0;
-      translate: 0 1.5em;
-    }
+    display: grid;
   }
   .msg::backdrop {
-    background: rgb(8 9 18 / 0);
-    backdrop-filter: blur(0);
-    transition:
-      background 0.35s ease,
-      backdrop-filter 0.35s ease,
-      overlay 0.35s allow-discrete,
-      display 0.35s allow-discrete;
+    background: transparent;
   }
-  .msg[open]::backdrop {
-    background: rgb(8 9 18 / 0.6);
+  .msg__scrim {
+    position: absolute;
+    inset: 0;
+    background: rgb(8 9 18 / 0.62);
     backdrop-filter: blur(6px);
   }
-  @starting-style {
-    .msg[open]::backdrop {
-      background: rgb(8 9 18 / 0);
-      backdrop-filter: blur(0);
-    }
+  .msg__morph {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    visibility: hidden;
+    pointer-events: none;
+    will-change: transform, width, height;
   }
 
   .msg__panel {
+    position: relative;
+    z-index: 2;
     display: grid;
     gap: 1.75em;
+    width: min(46em, 100%);
+    max-height: calc(100dvh - 2em);
     padding: 2.5em;
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    border-radius: 0.9em;
+    background: var(--c-silver);
+    box-shadow: 0 1.5em 4em rgb(8 9 18 / 0.35);
   }
   .msg__top {
     display: flex;
@@ -174,7 +207,7 @@ import Button from './Button.astro'
   }
   .msg__close {
     display: inline-flex;
-    gap: 0.4em;
+    gap: 0.5em;
     align-items: center;
     padding: 0.45em 0.9em;
     border: 1px solid currentColor;
@@ -185,10 +218,22 @@ import Button from './Button.astro'
       background-color 0.2s,
       color 0.2s;
   }
+  .msg__close svg {
+    width: 0.75em;
+    height: 0.75em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    transition: rotate 0.35s var(--ease-house);
+  }
   .msg__close:hover,
   .msg__close:focus-visible {
     background: var(--c-ink);
     color: var(--c-silver);
+  }
+  .msg__close:hover svg {
+    rotate: 90deg;
   }
 
   .msg__form {
@@ -205,6 +250,7 @@ import Button from './Button.astro'
     gap: 1.6em;
   }
   .msg__field {
+    position: relative;
     display: grid;
     gap: 0.45em;
   }
@@ -219,6 +265,7 @@ import Button from './Button.astro'
   }
   .msg__count {
     font-weight: 400;
+    font-variant-numeric: tabular-nums;
     opacity: 0.5;
   }
   .msg input[type='text'],
@@ -226,43 +273,57 @@ import Button from './Button.astro'
     width: 100%;
     padding: 0.55em 0;
     border: 0;
-    border-bottom: 1.5px solid rgb(8 9 18 / 0.3);
+    border-bottom: 1.5px solid rgb(8 9 18 / 0.25);
     border-radius: 0;
     background: transparent;
     color: inherit;
     font: inherit;
     font-size: 1.1em;
-    transition: border-color 0.2s;
+    caret-color: var(--c-blue);
   }
   .msg textarea {
-    resize: vertical;
     min-height: 7.5em;
     line-height: 1.45;
+    resize: vertical;
   }
   .msg input[type='text']::placeholder,
   .msg textarea::placeholder {
-    color: rgb(8 9 18 / 0.4);
+    color: rgb(8 9 18 / 0.45);
   }
   .msg input[type='text']:focus,
   .msg textarea:focus {
     outline: none;
-    border-bottom-color: var(--c-blue);
   }
-  .msg input[type='text']:focus-visible,
-  .msg textarea:focus-visible {
-    box-shadow: 0 2px 0 var(--c-blue);
+  /* The focus line draws in from the left over the resting rule, like the site's link underlines. */
+  .msg__line {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: var(--c-blue);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.6s var(--ease-house);
+  }
+  .msg__field:focus-within .msg__line {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  .msg__field:has(:user-invalid) .msg__line {
+    background: #b3261e;
+    transform: scaleX(1);
   }
 
   .msg__kinds {
     display: grid;
-    gap: 0.7em;
     margin: 0;
     padding: 0;
     border: 0;
   }
   .msg__kinds legend {
-    padding: 0;
     margin-bottom: 0.7em;
+    padding: 0;
   }
   .msg__chips {
     display: flex;
@@ -278,22 +339,40 @@ import Button from './Button.astro'
     opacity: 0;
     pointer-events: none;
   }
+  /* A picked chip fills with ink from the left. */
   .msg__chip span {
+    position: relative;
     display: inline-block;
+    overflow: hidden;
     padding: 0.45em 0.95em;
     border: 1px solid var(--c-ink);
     border-radius: 2em;
     font-size: 0.95em;
+    isolation: isolate;
     transition:
-      background-color 0.2s,
-      color 0.2s;
+      color 0.3s,
+      scale 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .msg__chip span::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--c-ink);
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.45s var(--ease-house);
   }
   .msg__chip:hover span {
-    background: rgb(8 9 18 / 0.07);
+    background: rgb(8 9 18 / 0.06);
+  }
+  .msg__chip:active span {
+    scale: 0.96;
   }
   .msg__chip input:checked + span {
-    background: var(--c-ink);
     color: var(--c-silver);
+  }
+  .msg__chip input:checked + span::before {
+    clip-path: inset(0 0 0 0);
   }
   .msg__chip input:focus-visible + span {
     outline: 2px solid var(--c-blue);
@@ -319,21 +398,60 @@ import Button from './Button.astro'
   .msg__status a {
     color: var(--c-blue);
     text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .msg__send-busy {
+    display: none;
+  }
+  .msg__send-busy i {
+    font-style: normal;
+    animation: msg-dot 1.2s infinite;
+  }
+  .msg__send-busy i:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .msg__send-busy i:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  @keyframes msg-dot {
+    0%,
+    60%,
+    100% {
+      opacity: 0.25;
+    }
+    30% {
+      opacity: 1;
+    }
+  }
+  .msg[data-state='sending'] .msg__send-idle {
+    display: none;
+  }
+  .msg[data-state='sending'] .msg__send-busy {
+    display: inline;
   }
   .msg[data-state='sending'] .msg__actions .btn {
-    opacity: 0.6;
     pointer-events: none;
   }
 
   .msg__sent {
     display: none;
     gap: 0.9em;
+    justify-items: start;
   }
   .msg[data-state='sent'] .msg__form {
     display: none;
   }
   .msg[data-state='sent'] .msg__sent {
     display: grid;
+  }
+  .msg__tick {
+    width: 3.2em;
+    height: 3.2em;
+    fill: none;
+    stroke: var(--c-blue);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
   .msg__sent-title {
     font-size: 3em;
@@ -345,13 +463,32 @@ import Button from './Button.astro'
     font-size: 0.95em;
   }
 
+  /* Covers the panel while a message goes out; hidden at rest. */
+  .msg__sweep {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    color: var(--c-blue);
+    pointer-events: none;
+  }
+  .msg__sweep path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 0;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
   @media (max-width: 767px) {
     .msg {
-      width: calc(100% - 1.5em);
-      max-height: calc(100dvh - 1.5em);
+      padding: 0.75em;
     }
     .msg__panel {
       gap: 1.4em;
+      max-height: calc(100dvh - 1.5em);
       padding: 1.5em 1.25em;
     }
     .msg__title {
@@ -366,8 +503,9 @@ import Button from './Button.astro'
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .msg,
-    .msg::backdrop {
+    .msg__line,
+    .msg__chip span::before,
+    .msg__close svg {
       transition: none;
     }
   }

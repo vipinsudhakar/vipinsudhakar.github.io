@@ -12,10 +12,10 @@ import { initLogoScroll } from './logo-scroll'
 import { initMessageBox } from './message'
 import { initOrbit } from './orbit'
 import { initParallax } from './parallax'
-import { initReveal } from './reveal'
 import { initScrollDraw } from './scroll-draw'
 import { initSplitLines, initSplitRandom, initSplitRolling } from './split'
 import { initThemeNav } from './theme-nav'
+import { initToolkit } from './toolkit'
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -44,7 +44,7 @@ async function boot() {
     initExpertise(section)
     initOrbit(section)
     initSplitRandom(section)
-    initReveal(section)
+    initToolkit(section, lenis)
     initContactWords(section)
     initFooterReveal(section)
   }
