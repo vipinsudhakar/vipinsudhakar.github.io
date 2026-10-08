@@ -9,6 +9,8 @@ export type Project = {
   poster?: string
   /** A short, silent loop under public/ (webm). It plays on the card in front. */
   video?: string
+  /** One line of background, e.g. the team, the event and your part in it. */
+  context?: string
   stack: string[]
 }
 
@@ -17,6 +19,17 @@ export type Project = {
  * and video into public/images/projects and public/videos.
  */
 export const projects: Project[] = [
+  {
+    title: 'TrialBridge',
+    blurb:
+      "Matches cancer patients in India to clinical trials. Gemma 4 reads photos of their reports, then checks the patient against every eligibility rule of each recruiting trial and explains each verdict.",
+    status: 'live',
+    liveUrl: 'https://trialbridge-beta.vercel.app',
+    repoUrl: 'https://github.com/vipinsudhakar/hacktoberfest-hack-day-coimbatore-x-init-club-and-idea-club',
+    poster: '/images/projects/trialbridge.jpg',
+    context: 'Team Latent at Hacktoberfest Hack Day Coimbatore. I built the architecture and the Gemma integration.',
+    stack: ['Next.js', 'Gemma 4', 'TypeScript', 'ClinicalTrials.gov'],
+  },
   {
     title: 'Filament',
     blurb:

@@ -35,6 +35,11 @@ const pad = (n: number) => String(n).padStart(2, '0')
                 <p class="orbit__blurb" data-orbit-reveal>
                   {p.blurb}
                 </p>
+                {p.context && (
+                  <p class="orbit__context" data-orbit-fade>
+                    {p.context}
+                  </p>
+                )}
                 <ul class="orbit__meta" data-orbit-fade>
                   {p.liveUrl && (
                     <li>
@@ -189,6 +194,22 @@ const pad = (n: number) => String(n).padStart(2, '0')
   }
   .orbit__blurb {
     margin-top: 0.6em;
+  }
+  /* A step smaller than the blurb at every width (the global p sizes change per breakpoint). */
+  .orbit__context {
+    margin-top: 0.7em;
+    font-size: 0.95em;
+    opacity: 0.65;
+  }
+  @media (max-width: 991px) {
+    .orbit__context {
+      font-size: 0.85em;
+    }
+  }
+  @media (max-width: 767px) {
+    .orbit__context {
+      font-size: 0.78em;
+    }
   }
   .orbit__meta {
     display: flex;

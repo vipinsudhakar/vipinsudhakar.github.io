@@ -22,7 +22,7 @@ export const expertise: Area[] = [
   },
   {
     title: 'ML & bioinformatics',
-    text: 'Turning models into tools people can use: sequence analysis with Biopython, protein structure prediction with ESMFold, and deep-learning experiments.',
+    text: 'Turning models into tools people can use: protein structure prediction with ESMFold, and Gemma 4 reading medical reports to match cancer patients with clinical trials.',
     image: '/images/expertise/bio.jpg',
     alt: 'Haemoglobin subunit alpha folded in 3D by ESMFold in Strand, coloured by prediction confidence',
   },
