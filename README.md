@@ -48,6 +48,8 @@ node scripts/grab.mjs http://localhost:5173/ public/images/projects/filament.jpg
 `--click` presses things first (repeatable), `--only` hides everything but the given elements, and
 `--record` films the visible page. Every option is listed at the top of `scripts/grab.mjs`.
 
+**Message box:** the "Send a message" box posts to Discord (one channel per kind of message) through a small relay in `relay/`. Set it up with [relay/README.md](relay/README.md), then put its address in `site.ts` → `inbox.endpoint`. Until then the box stays hidden.
+
 **Check the look:** with `npm run dev` running, `node scripts/shot.mjs captures/x.png --scroll 0,900,2400`
 saves a screenshot at each scroll position (`--size 390x844` for a phone, `--reduced` for reduced motion).
 

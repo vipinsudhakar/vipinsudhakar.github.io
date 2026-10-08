@@ -31,6 +31,17 @@ export const site = {
     github: 'https://github.com/vipinsudhakar',
   },
 
+  /**
+   * The "Send a message" box, which posts to Discord through the relay in relay/ (see its README).
+   * While `endpoint` is empty the box and its buttons stay hidden.
+   */
+  inbox: {
+    /** The deployed relay, e.g. 'https://vipinsudhakar-inbox.vercel.app/api/message'. */
+    endpoint: 'https://vipinsudhakar-inbox.vercel.app/api/message',
+    /** Let visitors pick what the message is about; each kind goes to its own channel. Off: all to #general-inbox. */
+    chooseKind: true,
+  },
+
   /** Footer menu; each href is a section id on the page. */
   nav: [
     { label: 'About', href: '#about' },

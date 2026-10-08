@@ -1,0 +1,4 @@
+.env*
+.vercel
+test.mjs
+dev-server.mjs

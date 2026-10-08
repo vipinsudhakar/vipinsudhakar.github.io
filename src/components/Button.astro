@@ -6,7 +6,12 @@
 import { buttonScribble } from '../lib/scribble'
 
 interface Props {
-  href: string
+  /** Where the link goes. Leave it out for a real <button> (see `type`). */
+  href?: string
+  /** A <button> instead of a link: 'button' for actions (with `opens`), 'submit' inside a form. */
+  type?: 'button' | 'submit'
+  /** For type="button": the dialog it opens, e.g. 'message' for the message box. */
+  opens?: 'message'
   variant?: 'ink' | 'blue' | 'silver' | 'white'
   /** Opens in a new tab. */
   external?: boolean
@@ -16,17 +21,20 @@ interface Props {
   anchor?: boolean
   class?: string
 }
-const { href, variant = 'ink', external = false, contact, anchor = false, class: className } = Astro.props
+const { href, type, opens, variant = 'ink', external = false, contact, anchor = false, class: className } = Astro.props
+const Tag = type ? 'button' : 'a'
 const path = buttonScribble()
 ---
 
-<a
+<Tag
   class:list={['btn', className]}
-  href={href}
+  href={type ? undefined : href}
+  type={type}
   data-btn
   data-variant={variant}
   data-contact={contact}
   data-anchor={anchor ? '' : undefined}
+  data-open-message={opens === 'message' ? '' : undefined}
   target={external ? '_blank' : undefined}
   rel={external ? 'noopener' : undefined}
 >
@@ -35,7 +43,7 @@ const path = buttonScribble()
     <path d={path}></path>
   </svg>
   <span class="btn__label"><slot /></span>
-</a>
+</Tag>
 
 <style is:global>
   .btn {

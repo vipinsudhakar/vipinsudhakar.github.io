@@ -1,0 +1,14 @@
+{
+  "name": "vipinsudhakar-inbox",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Relays the portfolio's message box to Discord channels.",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "dev": "node dev-server.mjs",
+    "test": "node test.mjs"
+  }
+}

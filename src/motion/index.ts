@@ -9,6 +9,7 @@ import { initFooterReveal } from './footer'
 import { playIntro } from './intro'
 import { initLenis } from './lenis'
 import { initLogoScroll } from './logo-scroll'
+import { initMessageBox } from './message'
 import { initOrbit } from './orbit'
 import { initParallax } from './parallax'
 import { initReveal } from './reveal'
@@ -48,6 +49,7 @@ async function boot() {
     initFooterReveal(section)
   }
   initAnchors(lenis)
+  initMessageBox(lenis)
   ScrollTrigger.refresh()
 
   await playIntro()

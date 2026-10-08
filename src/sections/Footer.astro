@@ -2,6 +2,7 @@
 /** Blue footer framed by thick brackets. On wider screens it slides out from under the page. */
 import Wordmark from '../components/Wordmark.astro'
 import { site } from '../data/site'
+import { inboxEndpoint } from '../lib/inbox'
 
 const year = new Date().getFullYear()
 ---
@@ -44,6 +45,15 @@ const year = new Date().getFullYear()
         <div class="footer__col">
           <p class="footer__label">Contact</p>
           <ul class="footer__list">
+            {
+              inboxEndpoint && (
+                <li>
+                  <button type="button" data-underline data-open-message>
+                    Message
+                  </button>
+                </li>
+              )
+            }
             <li><a data-underline data-contact="email" href="#contact">Email</a></li>
             <li><a data-underline data-contact="whatsapp" href="#contact" target="_blank" rel="noopener">WhatsApp</a></li>
             <li><a data-underline data-contact="phone" href="#contact">Phone</a></li>
@@ -119,7 +129,8 @@ const year = new Date().getFullYear()
     padding: 0;
     list-style: none;
   }
-  .footer__list a {
+  .footer__list a,
+  .footer__list button {
     font-size: 1.25em;
   }
   .footer__mark {
@@ -160,7 +171,8 @@ const year = new Date().getFullYear()
     .footer__label {
       font-size: 1.5em;
     }
-    .footer__list a {
+    .footer__list a,
+    .footer__list button {
       font-size: 1em;
     }
     .footer__bar {

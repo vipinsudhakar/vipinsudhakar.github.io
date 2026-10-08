@@ -7,6 +7,7 @@
 import Button from '../components/Button.astro'
 import { copy } from '../data/copy'
 import { site } from '../data/site'
+import { inboxEndpoint } from '../lib/inbox'
 ---
 
 <section class="contact" id="contact" data-theme="light" data-contact-section>
@@ -16,8 +17,15 @@ import { site } from '../data/site'
       <h2 class="contact__heading">{copy.contact.heading}</h2>
       <p class="contact__text">{copy.contact.text}</p>
       <div class="btn-row">
+        {
+          inboxEndpoint && (
+            <Button type="button" opens="message" variant="blue">
+              Send a message
+            </Button>
+          )
+        }
         <Button href="#contact" contact="whatsapp" variant="silver" external>WhatsApp</Button>
-        <Button href="#contact" contact="email" variant="blue">Email me</Button>
+        <Button href="#contact" contact="email" variant={inboxEndpoint ? 'silver' : 'blue'}>Email me</Button>
       </div>
       <ul class="contact__links">
         <li>

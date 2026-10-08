@@ -1,0 +1,374 @@
+---
+/**
+ * The "Send a message" box: a native dialog that posts to the Discord relay (relay/). Opened by
+ * any [data-open-message] element; behaviour in src/motion/message.ts. Not rendered at all until
+ * the relay's address is set in src/data/site.ts.
+ */
+import { KINDS } from '../../relay/kinds.mjs'
+import { site } from '../data/site'
+import { inboxEndpoint } from '../lib/inbox'
+import Button from './Button.astro'
+---
+
+{
+  inboxEndpoint && (
+    <dialog
+      class="msg"
+      data-message-box
+      data-endpoint={inboxEndpoint}
+      data-lenis-prevent
+      aria-labelledby="msg-title"
+      data-state="idle"
+    >
+      <div class="msg__panel">
+        <div class="msg__top">
+          <h2 class="msg__title" id="msg-title" tabindex="-1" autofocus>
+            <span aria-hidden="true">[</span> Send a message <span aria-hidden="true">]</span>
+          </h2>
+          <button class="msg__close" type="button" data-message-close>
+            Close <span aria-hidden="true">✕</span>
+          </button>
+        </div>
+
+        <form class="msg__form" data-message-form novalidate>
+          <p class="msg__lead">It lands straight in my Discord, so I'll see it quickly.</p>
+
+          <div class="msg__row">
+            <label class="msg__field">
+              <span class="msg__label">Your name</span>
+              <input name="name" type="text" autocomplete="name" required maxlength="80" />
+            </label>
+            <label class="msg__field">
+              <span class="msg__label">How should I reply?</span>
+              <input
+                name="reply"
+                type="text"
+                autocomplete="email"
+                required
+                minlength="3"
+                maxlength="120"
+                placeholder="Email, Discord or phone"
+              />
+            </label>
+          </div>
+
+          {
+            site.inbox.chooseKind && (
+              <fieldset class="msg__kinds">
+                <legend class="msg__label">What's it about?</legend>
+                <div class="msg__chips">
+                  {KINDS.map((kind, i) => (
+                    <label class="msg__chip">
+                      <input type="radio" name="kind" value={kind.id} required={i === 0} />
+                      <span>{kind.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )
+          }
+
+          <label class="msg__field">
+            <span class="msg__label">
+              Message <span class="msg__count" data-message-count aria-hidden="true">0 / 2000</span>
+            </span>
+            <textarea name="message" rows="6" required minlength="10" maxlength="2000"></textarea>
+          </label>
+
+          {/* Left empty by people; bots that fill every field get dropped by the relay. */}
+          <label class="msg__trap" aria-hidden="true">
+            Website <input name="website" type="text" tabindex="-1" autocomplete="off" />
+          </label>
+
+          <div class="msg__actions">
+            <Button type="submit" variant="blue">Send message</Button>
+            <p class="msg__status" data-message-status role="status" aria-live="polite"></p>
+          </div>
+        </form>
+
+        <div class="msg__sent" data-message-sent>
+          <p class="msg__sent-title">Message sent</p>
+          <p>Thanks. I'll get back to you soon.</p>
+          <div class="btn-row">
+            <button class="msg__close is-block" type="button" data-message-close>Close</button>
+            <button class="msg__close is-block" type="button" data-message-again>Send another</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  )
+}
+
+<style is:global>
+  .msg {
+    width: min(46em, calc(100% - 2em));
+    max-width: none;
+    max-height: calc(100dvh - 2em);
+    margin: auto;
+    padding: 0;
+    overflow: auto;
+    border: 0;
+    border-radius: 0.9em;
+    background: var(--c-silver);
+    color: var(--c-ink);
+    overscroll-behavior: contain;
+    opacity: 0;
+    translate: 0 1.5em;
+    transition:
+      opacity 0.35s ease,
+      translate 0.55s var(--ease-house),
+      overlay 0.35s allow-discrete,
+      display 0.35s allow-discrete;
+  }
+  .msg[open] {
+    opacity: 1;
+    translate: 0 0;
+  }
+  @starting-style {
+    .msg[open] {
+      opacity: 0;
+      translate: 0 1.5em;
+    }
+  }
+  .msg::backdrop {
+    background: rgb(8 9 18 / 0);
+    backdrop-filter: blur(0);
+    transition:
+      background 0.35s ease,
+      backdrop-filter 0.35s ease,
+      overlay 0.35s allow-discrete,
+      display 0.35s allow-discrete;
+  }
+  .msg[open]::backdrop {
+    background: rgb(8 9 18 / 0.6);
+    backdrop-filter: blur(6px);
+  }
+  @starting-style {
+    .msg[open]::backdrop {
+      background: rgb(8 9 18 / 0);
+      backdrop-filter: blur(0);
+    }
+  }
+
+  .msg__panel {
+    display: grid;
+    gap: 1.75em;
+    padding: 2.5em;
+  }
+  .msg__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1em;
+  }
+  .msg__title {
+    font-size: 2.4em;
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+  .msg__title:focus {
+    outline: none;
+  }
+  .msg__title span {
+    font-weight: 300;
+  }
+  .msg__close {
+    display: inline-flex;
+    gap: 0.4em;
+    align-items: center;
+    padding: 0.45em 0.9em;
+    border: 1px solid currentColor;
+    border-radius: 2em;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+  .msg__close:hover,
+  .msg__close:focus-visible {
+    background: var(--c-ink);
+    color: var(--c-silver);
+  }
+
+  .msg__form {
+    display: grid;
+    gap: 1.6em;
+  }
+  .msg__lead {
+    margin-top: -0.6em;
+    opacity: 0.75;
+  }
+  .msg__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.6em;
+  }
+  .msg__field {
+    display: grid;
+    gap: 0.45em;
+  }
+  .msg__label {
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    font-size: 0.8em;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .msg__count {
+    font-weight: 400;
+    opacity: 0.5;
+  }
+  .msg input[type='text'],
+  .msg textarea {
+    width: 100%;
+    padding: 0.55em 0;
+    border: 0;
+    border-bottom: 1.5px solid rgb(8 9 18 / 0.3);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 1.1em;
+    transition: border-color 0.2s;
+  }
+  .msg textarea {
+    resize: vertical;
+    min-height: 7.5em;
+    line-height: 1.45;
+  }
+  .msg input[type='text']::placeholder,
+  .msg textarea::placeholder {
+    color: rgb(8 9 18 / 0.4);
+  }
+  .msg input[type='text']:focus,
+  .msg textarea:focus {
+    outline: none;
+    border-bottom-color: var(--c-blue);
+  }
+  .msg input[type='text']:focus-visible,
+  .msg textarea:focus-visible {
+    box-shadow: 0 2px 0 var(--c-blue);
+  }
+
+  .msg__kinds {
+    display: grid;
+    gap: 0.7em;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .msg__kinds legend {
+    padding: 0;
+    margin-bottom: 0.7em;
+  }
+  .msg__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55em;
+  }
+  .msg__chip {
+    position: relative;
+    cursor: pointer;
+  }
+  .msg__chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .msg__chip span {
+    display: inline-block;
+    padding: 0.45em 0.95em;
+    border: 1px solid var(--c-ink);
+    border-radius: 2em;
+    font-size: 0.95em;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+  .msg__chip:hover span {
+    background: rgb(8 9 18 / 0.07);
+  }
+  .msg__chip input:checked + span {
+    background: var(--c-ink);
+    color: var(--c-silver);
+  }
+  .msg__chip input:focus-visible + span {
+    outline: 2px solid var(--c-blue);
+    outline-offset: 3px;
+  }
+
+  .msg__trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .msg__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1em 1.5em;
+  }
+  .msg__status {
+    font-size: 0.95em;
+  }
+  .msg__status a {
+    color: var(--c-blue);
+    text-decoration: underline;
+  }
+  .msg[data-state='sending'] .msg__actions .btn {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .msg__sent {
+    display: none;
+    gap: 0.9em;
+  }
+  .msg[data-state='sent'] .msg__form {
+    display: none;
+  }
+  .msg[data-state='sent'] .msg__sent {
+    display: grid;
+  }
+  .msg__sent-title {
+    font-size: 3em;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .msg__close.is-block {
+    font-size: 0.95em;
+  }
+
+  @media (max-width: 767px) {
+    .msg {
+      width: calc(100% - 1.5em);
+      max-height: calc(100dvh - 1.5em);
+    }
+    .msg__panel {
+      gap: 1.4em;
+      padding: 1.5em 1.25em;
+    }
+    .msg__title {
+      font-size: 1.7em;
+    }
+    .msg__row {
+      grid-template-columns: 1fr;
+      gap: 1.4em;
+    }
+    .msg__sent-title {
+      font-size: 2.2em;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .msg,
+    .msg::backdrop {
+      transition: none;
+    }
+  }
+</style>
