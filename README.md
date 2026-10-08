@@ -51,7 +51,7 @@ node scripts/grab.mjs http://localhost:5173/ public/images/projects/filament.jpg
 **Message box:** the "Send a message" box posts to Discord (one channel per kind of message) through a small relay in `relay/`. Set it up with [relay/README.md](relay/README.md), then put its address in `site.ts` → `inbox.endpoint`. Until then the box stays hidden.
 
 **Check the look:** with `npm run dev` running, `node scripts/shot.mjs captures/x.png --scroll 0,900,2400`
-saves a screenshot at each scroll position (`--size 390x844` for a phone, `--reduced` for reduced motion).
+saves a screenshot at each scroll position (`--size 390x844` for a phone).
 
 ## Deploy
 
@@ -63,7 +63,6 @@ their own repos.
 
 ## Accessibility
 
-Everything works without the motion: with *reduce motion* switched on, the intro, pinning and
-scroll effects are skipped and each section shows in its final state. Without JavaScript the page
-still reads top to bottom (the email and phone links need JS, since they're assembled in the
-browser to keep them away from scrapers).
+The site always plays its full motion, including for visitors whose system asks for reduced motion.
+Without JavaScript it still reads top to bottom (the email and phone links need JS, since they're
+assembled in the browser to keep them away from scrapers).

@@ -3,7 +3,7 @@ import { initBrackets } from './brackets'
 import { initButtons } from './buttons'
 import { initContactLinks, initYear } from './contact'
 import { initContactWords } from './contact-words'
-import { reducedMotion, ScrollTrigger } from './core'
+import { ScrollTrigger } from './core'
 import { initExpertise } from './expertise'
 import { initFooterReveal } from './footer'
 import { playIntro } from './intro'
@@ -28,7 +28,7 @@ async function boot() {
   // Text splitting measures lines, so let the webfont arrive first (but don't hang on it).
   await Promise.race([document.fonts.ready, wait(2500)])
 
-  const lenis = reducedMotion ? null : initLenis()
+  const lenis = initLenis()
   lenis?.stop()
   initThemeNav()
   initLogoScroll()

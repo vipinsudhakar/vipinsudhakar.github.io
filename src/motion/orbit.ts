@@ -1,4 +1,4 @@
-import { gsap, reducedMotion, ScrollTrigger, select, SplitText } from './core'
+import { gsap, ScrollTrigger, select, SplitText } from './core'
 
 /**
  * The project ring (markup in Orbit.astro). Tiles sit on a line through the centre, spaced evenly
@@ -53,13 +53,13 @@ function setUp(root: HTMLElement) {
   // The front card grows a little and opens its letterbox.
   const emphasise = (i: number, on: boolean, animate = true) => {
     const vars = { '--grow': on ? 1.15 : 1, '--reveal': on ? 1 : 0 }
-    if (!animate || reducedMotion) gsap.set(cards[i], vars)
+    if (!animate) gsap.set(cards[i], vars)
     else gsap.to(cards[i], { ...vars, duration: on ? 0.75 : 0.55, ease: 'house', overwrite: true })
   }
 
   const pauseAll = () => videos.forEach((video) => video?.pause())
   const playFront = () => {
-    if (!inView || reducedMotion) return
+    if (!inView) return
     videos.forEach((video, i) => i !== front && video?.pause())
     videos[front]?.play().catch(() => {})
   }
@@ -87,7 +87,7 @@ function setUp(root: HTMLElement) {
       block.el.setAttribute('aria-hidden', String(i !== index))
       if (block !== prev && i !== index) gsap.set(block.el, { autoAlpha: 0 })
     })
-    if (!animate || reducedMotion) {
+    if (!animate) {
       if (prev) gsap.set(prev.el, { autoAlpha: 0 })
       gsap.set(next.el, { autoAlpha: 1 })
       gsap.set(next.split.lines, { yPercent: 0 })
@@ -117,7 +117,7 @@ function setUp(root: HTMLElement) {
     const label = String(project + 1).padStart(2, '0')
     if (counter.textContent === label) return
     gsap.killTweensOf(counter)
-    if (!animate || reducedMotion) {
+    if (!animate) {
       counter.textContent = label
       return
     }
@@ -142,11 +142,6 @@ function setUp(root: HTMLElement) {
     setFront(front)
     showText(projectOf(front))
     setCount(projectOf(front))
-    if (reducedMotion) {
-      ring.step = target
-      layout()
-      return
-    }
     // overwrite 'auto' only replaces the running step tween, never the spin.
     gsap.to(ring, { step: target, duration: 0.7, ease: 'house', overwrite: 'auto', onUpdate: layout, onComplete: playFront })
   }
@@ -169,7 +164,7 @@ function setUp(root: HTMLElement) {
     onToggle: ({ isActive }) => {
       inView = isActive
       if (isActive) {
-        if (!reducedMotion) spin.play()
+        spin.play()
         playFront()
       } else {
         spin.pause()

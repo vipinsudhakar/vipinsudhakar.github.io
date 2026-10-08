@@ -1,5 +1,4 @@
 import type Lenis from 'lenis'
-import { reducedMotion } from './core'
 import { easeInOutQuart } from './lenis'
 
 /** Scrolls to #id (or the very top for #top). Returns false if there is nothing to scroll to. */
@@ -7,8 +6,8 @@ export function scrollToHash(hash: string, lenis: Lenis | null): boolean {
   const target = hash === '#top' ? null : document.querySelector<HTMLElement>(hash)
   if (hash !== '#top' && !target) return false
   if (lenis) lenis.scrollTo(target ?? 0, { duration: 1.2, easing: easeInOutQuart })
-  else if (target) target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' })
-  else window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' })
+  else if (target) target.scrollIntoView({ behavior: 'smooth' })
+  else window.scrollTo({ top: 0, behavior: 'smooth' })
   return true
 }
 

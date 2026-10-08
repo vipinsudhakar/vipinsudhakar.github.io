@@ -2,7 +2,7 @@
 /**
  * The load intro: a blue scribble covers the screen, the signature writes itself and erases,
  * then the scribble pulls away to reveal the page. Timeline in src/motion/intro.ts.
- * Hidden without JS or with reduced motion; a CSS failsafe removes it if the scripts never run.
+ * Hidden without JS; a CSS failsafe removes it if the scripts never run.
  */
 import { signature } from '../data/signature'
 import { screenScribble } from '../lib/scribble'
@@ -73,10 +73,5 @@ const path = screenScribble({ seed: 3 })
     stroke-width: 8;
     stroke-linecap: round;
     stroke-linejoin: round;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .js .intro {
-      display: none;
-    }
   }
 </style>

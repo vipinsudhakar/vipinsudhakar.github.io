@@ -1,4 +1,4 @@
-import { gsap, reducedMotion } from './core'
+import { gsap } from './core'
 
 /** Plays the load intro (see Intro.astro). Resolves once the page is uncovered. */
 export function playIntro(): Promise<void> {
@@ -6,7 +6,7 @@ export function playIntro(): Promise<void> {
   const reveal = document.querySelectorAll<HTMLElement>('[data-intro-reveal]')
   const scribble = intro?.querySelector<SVGPathElement>('[data-intro-scribble]')
 
-  if (!intro || !scribble || reducedMotion) {
+  if (!intro || !scribble) {
     intro?.remove()
     gsap.set(reveal, { autoAlpha: 1 })
     return Promise.resolve()

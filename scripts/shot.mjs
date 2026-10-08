@@ -3,11 +3,10 @@
  * A quick look, not a test. Start the site first (npm run dev, or npm run preview after a build).
  *
  * Usage:  node scripts/shot.mjs <out.png> [--size 1440x900] [--wait 4500] [--scroll 900,2400] [--full]
- *                                         [--reduced] [--url http://127.0.0.1:4321/]
+ *                                         [--url http://127.0.0.1:4321/]
  *   --scroll  wheel down to each offset in turn (so smooth scroll and scroll effects run as they
  *             would for a person), saving one capture per stop as out-<offset>.png
  *   --full    wheel through the whole page, then capture it in one tall image
- *   --reduced emulate prefers-reduced-motion
  */
 import { chromium } from '@playwright/test'
 
@@ -23,10 +22,7 @@ const wait = Number(flag('--wait', '4500'))
 const url = flag('--url', process.env.BASE_URL ?? 'http://127.0.0.1:4321/')
 
 const browser = await chromium.launch({ channel: process.env.PW_CHANNEL ?? 'msedge', headless: true })
-const page = await browser.newPage({
-  viewport: { width, height },
-  reducedMotion: args.includes('--reduced') ? 'reduce' : 'no-preference',
-})
+const page = await browser.newPage({ viewport: { width, height } })
 const logs = []
 page.on('console', (m) => (m.type() === 'error' || m.type() === 'warning') && logs.push(`${m.type()}: ${m.text()}`))
 page.on('pageerror', (e) => logs.push(`pageerror: ${e}`))

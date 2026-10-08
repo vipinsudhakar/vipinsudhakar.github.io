@@ -1,5 +1,5 @@
 import type Lenis from 'lenis'
-import { gsap, reducedMotion } from './core'
+import { gsap } from './core'
 
 type State = 'idle' | 'sending' | 'sent' | 'error'
 
@@ -9,8 +9,7 @@ type State = 'idle' | 'sending' | 'sent' | 'error'
  * Motion: the button you click grows into the panel (a shape morphs from the button's box,
  * colour and corner radius to the panel's), then the panel's contents rise in. Closing reverses
  * it back into the button. Sending sweeps a blue scribble across the panel, swaps in the
- * "Message sent" view underneath, and lets the panel ease to its new height. Reduced motion keeps
- * plain fades and the state changes.
+ * "Message sent" view underneath, and lets the panel ease to its new height.
  *
  * Behaviour: Esc, the Close buttons or a click on the scrim close it, page scrolling pauses while
  * it's open, and focus returns to whatever opened it.
@@ -85,7 +84,7 @@ export function initMessageBox(lenis: Lenis | null) {
     lenis?.stop()
 
     const source = openerBox()
-    if (reducedMotion || !source) {
+    if (!source) {
       motion = gsap.timeline().to([scrim, panel], { autoAlpha: 1, duration: 0.25, ease: 'power1.out' })
       return
     }
@@ -129,7 +128,7 @@ export function initMessageBox(lenis: Lenis | null) {
       closing = false
     }
     const destination = openerBox()
-    if (reducedMotion || !destination) {
+    if (!destination) {
       motion = gsap.timeline({ onComplete: finish }).to([panel, scrim], { autoAlpha: 0, duration: 0.2 })
       return
     }
@@ -164,11 +163,6 @@ export function initMessageBox(lenis: Lenis | null) {
     const before = panel.offsetHeight
     setState(next)
     const height = panel.offsetHeight
-    if (reducedMotion) {
-      gsap.fromTo(steps(), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 })
-      after?.()
-      return gsap.timeline()
-    }
     return gsap
       .timeline({ onComplete: after })
       .fromTo(panel, { height: before }, { height, duration: 0.55, ease: 'expo.out', clearProps: 'height' }, 0)
@@ -184,7 +178,7 @@ export function initMessageBox(lenis: Lenis | null) {
   const showSent = () => {
     status.textContent = ''
     const done = () => panel.querySelector<HTMLElement>('[data-message-sent] [data-message-close]')?.focus()
-    if (reducedMotion || !sweep) {
+    if (!sweep) {
       swapView('sent', done)
       return
     }
@@ -202,7 +196,6 @@ export function initMessageBox(lenis: Lenis | null) {
   }
 
   const shake = () => {
-    if (reducedMotion) return
     gsap.fromTo(panel, { x: 0 }, { keyframes: { x: [-9, 8, -5, 3, 0] }, duration: 0.42, ease: 'power2.out' })
   }
 

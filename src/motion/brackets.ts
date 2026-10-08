@@ -1,8 +1,7 @@
-import { gsap, reducedMotion, select } from './core'
+import { gsap, select } from './core'
 
 /** The [ brackets ] of a BracketHeading slide in from either side as it scrolls up the screen. */
 export function initBrackets(scope: ParentNode) {
-  if (reducedMotion) return
   select(scope, '[data-bracket]').forEach((heading) => {
     const left = heading.querySelector('[data-bracket-l]')
     const right = heading.querySelector('[data-bracket-r]')

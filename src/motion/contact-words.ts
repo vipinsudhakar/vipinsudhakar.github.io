@@ -1,4 +1,4 @@
-import { gsap, reducedMotion, select } from './core'
+import { gsap, select } from './core'
 
 /** "Contact" in a handful of the world's languages. */
 const WORDS = [
@@ -34,7 +34,6 @@ const ring = (n: number, rx: number, ry: number, offset: number) =>
  * heading and rush past the viewer. The heading block itself un-blurs as the section arrives.
  */
 export function initContactWords(scope: ParentNode) {
-  if (reducedMotion) return
   select(scope, '[data-contact-section]').forEach((section) => {
     const content = section.querySelector<HTMLElement>('[data-contact-content]')
     const layer = section.querySelector<HTMLElement>('[data-contact-words]')

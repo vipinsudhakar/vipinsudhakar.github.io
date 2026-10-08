@@ -18,7 +18,6 @@ CustomEase.create('ink', '0.78, 0.18, 0.18, 1')
  */
 CustomEase.create('scroll', '0.4, 0, 0.2, 1')
 
-export const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 export const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
 
 /** Elements matching the selector inside scope, including scope itself. */

@@ -23,7 +23,7 @@ const placeholder = screenScribble({ seed: 3 })
       )
     }
   </div>
-  <!-- Static masthead for reduced motion and no JS; otherwise the header's wordmark plays this part. -->
+  <!-- Static masthead for no JS; otherwise the header's wordmark plays this part. -->
   <Wordmark class="hero__mark" decorative />
   <div class="hero__content">
     <p class="hero__status" data-intro-reveal>
@@ -91,11 +91,6 @@ const placeholder = screenScribble({ seed: 3 })
   }
   .no-js .hero__mark {
     display: block;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .hero__mark {
-      display: block;
-    }
   }
   .hero__content {
     position: relative;

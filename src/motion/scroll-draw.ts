@@ -1,4 +1,4 @@
-import { gsap, reducedMotion, select } from './core'
+import { gsap, select } from './core'
 import { refreshNavTheme } from './theme-nav'
 
 /**
@@ -11,10 +11,6 @@ export function initScrollDraw(scope: ParentNode) {
     const overlay = wrap.querySelector<HTMLElement>('[data-scroll-draw-overlay]')
     const paths = overlay?.querySelectorAll('path')
     if (!content || !overlay || !paths?.length) return
-    if (reducedMotion) {
-      overlay.hidden = true
-      return
-    }
 
     const fit = () => void gsap.set(wrap, { height: Math.max(content.scrollHeight, window.innerHeight) })
     fit()

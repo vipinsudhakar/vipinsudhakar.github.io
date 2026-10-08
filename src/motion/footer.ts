@@ -1,4 +1,4 @@
-import { gsap, reducedMotion, select } from './core'
+import { gsap, select } from './core'
 
 /**
  * The footer stays put while the page above slides off it, so it looks revealed from underneath.
@@ -6,7 +6,6 @@ import { gsap, reducedMotion, select } from './core'
  * would make it drift. Tablet width and up.
  */
 export function initFooterReveal(scope: ParentNode) {
-  if (reducedMotion) return
   select(scope, '[data-footer]').forEach((wrap) => {
     const inner = wrap.querySelector<HTMLElement>('[data-footer-inner]')
     if (!inner) return

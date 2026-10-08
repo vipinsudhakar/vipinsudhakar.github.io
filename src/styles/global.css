@@ -166,10 +166,3 @@ button {
     font-size: 0.875em;
   }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .js [data-intro-reveal] {
-    visibility: visible;
-    animation: none;
-  }
-}

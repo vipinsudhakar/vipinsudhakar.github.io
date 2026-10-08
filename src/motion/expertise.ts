@@ -1,4 +1,4 @@
-import { gsap, reducedMotion, select } from './core'
+import { gsap, select } from './core'
 
 /**
  * Wide screens: pins the Expertise section and, step by step, closes the open panel while the
@@ -6,7 +6,6 @@ import { gsap, reducedMotion, select } from './core'
  * row stays above the open one. Everywhere else the section stays a plain list.
  */
 export function initExpertise(scope: ParentNode) {
-  if (reducedMotion) return
   select(scope, '[data-xp]').forEach((section) => {
     const sticky = section.querySelector<HTMLElement>('.xp__sticky')
     const list = section.querySelector<HTMLElement>('[data-xp-list]')

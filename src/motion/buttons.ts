@@ -1,11 +1,11 @@
-import { finePointer, gsap, reducedMotion } from './core'
+import { finePointer, gsap } from './core'
 
 /**
  * On mouse hover a pill button gets scribbled full of its hover colour; on leave the stroke runs
- * off the end. Touch screens and reduced motion keep the plain colour swap from Button.astro.
+ * off the end. Touch screens keep the plain colour swap from Button.astro.
  */
 export function initButtons() {
-  if (!finePointer || reducedMotion) return
+  if (!finePointer) return
   document.querySelectorAll<HTMLElement>('[data-btn]').forEach((button) => {
     const path = button.querySelector<SVGPathElement>('.btn__ink path')
     if (!path) return

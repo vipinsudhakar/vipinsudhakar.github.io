@@ -1,5 +1,5 @@
 import type Lenis from 'lenis'
-import { gsap, reducedMotion, ScrollTrigger, select } from './core'
+import { gsap, ScrollTrigger, select } from './core'
 
 /** Lane drift at rest, in px per second; scrolling multiplies it. */
 const DRIFT = 26
@@ -14,10 +14,9 @@ const DRIFT = 26
  *    Scrolling speeds them up, skews them a little and, scrolling back up, reverses them; hovering
  *    a lane slows it so a tool can be read.
  *
- * Reduced motion and no JS keep the plain spec sheet.
+ * Without JS it stays the plain spec sheet.
  */
 export function initToolkit(scope: ParentNode, lenis: Lenis | null) {
-  if (reducedMotion) return
   select(scope, '[data-toolkit]').forEach((stage) => setUp(stage, lenis))
 }
 

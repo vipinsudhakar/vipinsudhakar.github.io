@@ -1,8 +1,7 @@
-import { gsap, reducedMotion, select, SplitText } from './core'
+import { gsap, select, SplitText } from './core'
 
 /** Letters roll up into place in 3D, one after another, as the text scrolls into view. */
 export function initSplitRolling(scope: ParentNode) {
-  if (reducedMotion) return
   select(scope, '[data-split-rolling]').forEach((el) => {
     SplitText.create(el, {
       type: 'lines, chars',
@@ -29,7 +28,6 @@ export function initSplitRolling(scope: ParentNode) {
 
 /** Lines slide up out of a mask, one after another. */
 export function initSplitLines(scope: ParentNode) {
-  if (reducedMotion) return
   select(scope, '[data-split-lines]').forEach((el) => {
     SplitText.create(el, {
       type: 'lines',
@@ -50,7 +48,6 @@ export function initSplitLines(scope: ParentNode) {
 
 /** Letters start scattered, turned and blurred, and gather into the word as you scroll. */
 export function initSplitRandom(scope: ParentNode) {
-  if (reducedMotion) return
   select(scope, '[data-split-random]').forEach((el) => {
     SplitText.create(el, {
       type: 'chars',
