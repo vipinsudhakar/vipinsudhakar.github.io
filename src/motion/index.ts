@@ -11,6 +11,7 @@ import { initLenis } from './lenis'
 import { initLogoScroll } from './logo-scroll'
 import { initOrbit } from './orbit'
 import { initParallax } from './parallax'
+import { initReveal } from './reveal'
 import { initScrollDraw } from './scroll-draw'
 import { initSplitLines, initSplitRandom, initSplitRolling } from './split'
 import { initThemeNav } from './theme-nav'
@@ -42,6 +43,7 @@ async function boot() {
     initExpertise(section)
     initOrbit(section)
     initSplitRandom(section)
+    initReveal(section)
     initContactWords(section)
     initFooterReveal(section)
   }

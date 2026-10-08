@@ -27,7 +27,7 @@ Everything personal lives in `src/data/`, and the sections read from there:
 | `copy.ts` | The words in each section |
 | `projects.ts` | The project ring: title, blurb, links, poster, preview video, stack |
 | `expertise.ts` | The numbered areas in the blue Expertise section |
-| `toolkit.ts` | The logo row ([Simple Icons](https://simpleicons.org)) |
+| `toolkit.ts` | Every tool in the Toolkit section, by group (logos from [Simple Icons](https://simpleicons.org)) |
 | `signature.ts` | The signature the intro writes (make it with `tools/sign.html`) |
 
 **Hero photo or resume:** drop the file in `public/` and set `heroImage` or `resume` in `site.ts`.

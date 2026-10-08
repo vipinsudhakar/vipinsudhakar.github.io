@@ -20,7 +20,7 @@ export const copy = {
   },
   toolkit: {
     big: 'Toolkit',
-    text: 'The languages, frameworks and tools I reach for most.',
+    text: "Everything I've built with so far, across my public and private projects.",
   },
   contact: {
     heading: "Let's talk",

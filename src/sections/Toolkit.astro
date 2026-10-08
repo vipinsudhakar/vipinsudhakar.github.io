@@ -1,34 +1,55 @@
 ---
+/**
+ * The big scattered TOOLKIT word, then every tool used across the repos as a spec sheet: one
+ * ruled row per group, with its count. Edit the list in src/data/toolkit.ts.
+ */
 import { copy } from '../data/copy'
 import { toolkit } from '../data/toolkit'
+
+const pad = (n: number) => String(n).padStart(2, '0')
+const total = toolkit.reduce((sum, { tools }) => sum + tools.length, 0)
 ---
 
 <section class="toolkit" data-theme="dark" aria-labelledby="toolkit-title">
   <h2 class="toolkit__big" id="toolkit-title" data-split-random>{copy.toolkit.big}</h2>
-  <p class="toolkit__text">{copy.toolkit.text}</p>
-  <ul class="toolkit__logos">
+  <p class="toolkit__text">{copy.toolkit.text} <span class="toolkit__total">[ {total} ]</span></p>
+  <div class="toolkit__sheet">
     {
-      toolkit.map(({ label, icon }) => (
-        <li class="toolkit__logo">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d={icon.path} />
-          </svg>
-          <span>{label}</span>
-        </li>
+      toolkit.map(({ group, tools }) => (
+        <div class="toolkit__group" data-reveal-group>
+          <h3 class="toolkit__name" data-reveal-item>
+            {group}
+            <span class="toolkit__count">[{pad(tools.length)}]</span>
+          </h3>
+          <ul class="toolkit__list">
+            {tools.map(({ label, icon, mark }) => (
+              <li class="toolkit__tool" data-reveal-item>
+                {icon ? (
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d={icon.path} />
+                  </svg>
+                ) : (
+                  <span class="toolkit__mark" aria-hidden="true">
+                    {mark}
+                  </span>
+                )}
+                <span>{label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       ))
     }
-  </ul>
+  </div>
 </section>
 
 <style is:global>
   .toolkit {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     gap: 3em;
     width: 100%;
-    min-height: 52em;
     padding: 7.5em 2em;
   }
   .toolkit__big {
@@ -38,69 +59,109 @@ import { toolkit } from '../data/toolkit'
     text-transform: uppercase;
   }
   .toolkit__text {
-    max-width: 30em;
+    max-width: 40em;
     text-align: center;
   }
-  .toolkit__logos {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 2em;
+  .toolkit__total {
+    white-space: nowrap;
+    opacity: 0.5;
+  }
+
+  /* One ruled row per group: the name on the left, its tools wrapping on the right. */
+  .toolkit__sheet {
     width: 100%;
-    max-width: 60em;
+    max-width: 76em;
     margin-top: 1em;
+    border-bottom: 1px solid rgb(8 9 18 / 0.16);
+  }
+  .toolkit__group {
+    display: grid;
+    grid-template-columns: 15em 1fr;
+    align-items: start;
+    gap: 1.5em;
+    padding: 1.5em 0;
+    border-top: 1px solid rgb(8 9 18 / 0.16);
+  }
+  .toolkit__name {
+    font-size: 0.9em;
+    font-weight: 650;
+    line-height: 1.6;
+    text-transform: uppercase;
+  }
+  .toolkit__count {
+    margin-left: 0.5em;
+    font-weight: 400;
+    opacity: 0.45;
+  }
+  .toolkit__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85em 1.9em;
     padding: 0;
     list-style: none;
   }
-  .toolkit__logo {
-    display: flex;
-    flex-direction: column;
+  .toolkit__tool {
+    display: inline-flex;
     align-items: center;
-    gap: 0.8em;
-    color: var(--c-ink);
+    gap: 0.55em;
+    font-size: 0.95em;
+    line-height: 1.4;
+    white-space: nowrap;
   }
-  .toolkit__logo svg {
-    width: 2.6em;
-    height: 2.6em;
+  .toolkit__tool svg {
+    flex: none;
+    width: 1.3em;
+    height: 1.3em;
     fill: currentColor;
   }
-  .toolkit__logo span {
-    font-size: 0.8em;
-    text-transform: uppercase;
-    white-space: nowrap;
+  /* For tools Simple Icons doesn't cover: a two-letter mark the same size as a logo. */
+  .toolkit__mark {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: 2.2em;
+    height: 2.2em;
+    border: 1px solid currentColor;
+    border-radius: 0.35em;
+    font-size: 0.59em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
   }
 
   @media (max-width: 991px) {
     .toolkit {
       gap: 2.25em;
-      min-height: 39em;
       padding: 5.625em 1.5em;
     }
     .toolkit__big {
       font-size: 5em;
     }
-    .toolkit__logos {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      row-gap: 2.25em;
+    .toolkit__group {
+      grid-template-columns: 10em 1fr;
+      gap: 1em;
+    }
+    .toolkit__list {
+      gap: 0.75em 1.5em;
     }
   }
   @media (max-width: 767px) {
     .toolkit {
-      min-height: 0;
       padding: 4.5em 1em;
     }
     .toolkit__big {
       font-size: 3.35em;
     }
-    .toolkit__logos {
-      justify-items: center;
-      column-gap: 0.5em;
+    .toolkit__group {
+      grid-template-columns: 1fr;
+      gap: 0.85em;
+      padding: 1.25em 0;
     }
-    .toolkit__logo span {
-      font-size: 0.7em;
-      text-align: center;
-      white-space: normal;
+    .toolkit__list {
+      gap: 0.65em 1.25em;
+    }
+    .toolkit__tool {
+      font-size: 0.85em;
     }
   }
 </style>
