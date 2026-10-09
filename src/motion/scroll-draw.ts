@@ -5,9 +5,9 @@ import { refreshNavTheme } from './theme-nav'
  * Pins the section while a scribble draws across it and its stroke swells until the screen is
  * solid blue, handing over to the blue section that follows (see SkillsIntro.astro).
  *
- * Timed so the blue keeps building for the whole pin: the line draws at an even pace from where
- * it enters the screen (the first 6% starts off the edge), while the stroke thickens ever faster,
- * closing the last gaps just as the pin lets go. (captures/coverage2.mjs measured the schedule.)
+ * Timed so the blue keeps building for the whole pin: nothing shows until the pin starts, then the
+ * line draws at an even pace while the stroke thickens ever faster, closing the last gaps just as
+ * the pin lets go. (captures/coverage2.mjs measured the schedule.)
  */
 export function initScrollDraw(scope: ParentNode) {
   select(scope, '[data-scroll-draw]').forEach((wrap) => {
@@ -18,7 +18,7 @@ export function initScrollDraw(scope: ParentNode) {
 
     const fit = () => void gsap.set(wrap, { height: Math.max(content.scrollHeight, window.innerHeight) })
     fit()
-    gsap.set(paths, { drawSVG: '0% 6%', strokeWidth: '5%' })
+    gsap.set(paths, { drawSVG: '0% 0%', strokeWidth: '5%' })
     gsap
       .timeline({
         scrollTrigger: {
