@@ -213,10 +213,15 @@ function initBand() {
   })
 }
 
-/** The next project fills with blue as it arrives (the same scribble as the Expertise hand-off). */
+/**
+ * The next project fills with the accent as it arrives (the same scribble as the Expertise
+ * hand-off), its name gathering as it comes. Both finish as the block reaches the top, filling the
+ * screen; it holds there a moment, the arrow edging forward, before the footer is revealed.
+ */
 function initNext() {
   const next = document.querySelector<HTMLElement>('[data-next]')
   const ink = next?.querySelector<SVGPathElement>('.writeup__next-ink path')
+  const arrow = next?.querySelector<HTMLElement>('.writeup__arrow')
   if (!next || !ink) return
   gsap.set(ink, { drawSVG: '0% 0%', strokeWidth: '5%' })
   gsap
@@ -224,7 +229,7 @@ function initNext() {
       scrollTrigger: {
         trigger: next,
         start: 'top 85%',
-        end: 'bottom bottom',
+        end: 'top top',
         scrub: true,
         onUpdate: ({ progress }) => {
           next.classList.toggle('is-filled', progress > 0.55)
@@ -239,6 +244,18 @@ function initNext() {
     .to(ink, { drawSVG: '0% 85%', duration: 1, ease: 'none' }, 0)
     .to(ink, { strokeWidth: '75%', duration: 1, ease: 'power1.in' }, 0)
     .fromTo(next, { '--fill': 0 }, { '--fill': 1, duration: 0.06, ease: 'none' }, 0.94)
+
+  gsap.timeline({
+    scrollTrigger: {
+      trigger: next,
+      start: 'top top',
+      end: '+=35%',
+      pin: true,
+      pinSpacing: true,
+      scrub: true,
+      invalidateOnRefresh: true,
+    },
+  }).fromTo(arrow ?? [], { x: 0 }, { x: '0.35em', ease: 'scroll' })
 }
 
 async function boot() {

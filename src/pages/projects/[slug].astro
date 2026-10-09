@@ -163,7 +163,7 @@ const stackRun = Array.from({ length: 4 }, () => project.stack.join(' · '))
           </svg>
           <span class="writeup__next-label">Next project</span>
           <span class="writeup__next-title">
-            <span data-next-title data-split-random>
+            <span data-next-title data-split-random data-split-end="center center">
               {next.title}
             </span>
             <span class="writeup__arrow" aria-hidden="true">
@@ -461,7 +461,8 @@ const stackRun = Array.from({ length: 4 }, () => project.stack.join(' · '))
     flex-direction: column;
     justify-content: center;
     gap: 0.5em;
-    min-height: 80vh;
+    min-height: 100vh;
+    min-height: 100svh;
     padding: 6em 2em;
     overflow: hidden;
     color: var(--fg);
@@ -516,6 +517,7 @@ const stackRun = Array.from({ length: 4 }, () => project.stack.join(' · '))
     text-transform: uppercase;
   }
   .writeup__arrow {
+    display: inline-block;
     font-weight: 300;
     transition: translate 0.45s var(--ease-house);
   }
@@ -587,7 +589,6 @@ const stackRun = Array.from({ length: 4 }, () => project.stack.join(' · '))
       font-size: 2em;
     }
     .writeup__next {
-      min-height: 60vh;
       padding: 4em 1em;
     }
     .writeup__next-title {

@@ -93,7 +93,7 @@ export function initSplitRandom(scope: ParentNode) {
             filter: 'blur(0px)',
             ease: 'scroll',
             stagger: { each: 0.03, from: 'random' },
-            scrollTrigger: { trigger: el, start: 'top bottom', end: 'top 30%', scrub: true },
+            scrollTrigger: { trigger: el, start: 'top bottom', end: el.dataset.splitEnd ?? 'top 30%', scrub: true },
           },
         )
       },
