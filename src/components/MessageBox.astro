@@ -150,7 +150,7 @@ const sweep = screenScribble({ seed: 14, w: 400, h: 300, passes: 7 })
     overflow: hidden;
     border: 0;
     background: transparent;
-    color: var(--c-ink);
+    color: var(--fg);
   }
   .msg[open] {
     display: grid;
@@ -185,7 +185,7 @@ const sweep = screenScribble({ seed: 14, w: 400, h: 300, passes: 7 })
     overflow: hidden auto;
     overscroll-behavior: contain;
     border-radius: 0.9em;
-    background: var(--c-silver);
+    background: var(--bg);
     box-shadow: 0 1.5em 4em rgb(8 9 18 / 0.35);
   }
   .msg__top {
@@ -229,8 +229,8 @@ const sweep = screenScribble({ seed: 14, w: 400, h: 300, passes: 7 })
   }
   .msg__close:hover,
   .msg__close:focus-visible {
-    background: var(--c-ink);
-    color: var(--c-silver);
+    background: var(--strong);
+    color: var(--on-strong);
   }
   .msg__close:hover svg {
     rotate: 90deg;
@@ -273,13 +273,13 @@ const sweep = screenScribble({ seed: 14, w: 400, h: 300, passes: 7 })
     width: 100%;
     padding: 0.55em 0;
     border: 0;
-    border-bottom: 1.5px solid rgb(8 9 18 / 0.25);
+    border-bottom: 1.5px solid color-mix(in srgb, var(--fg) 25%, transparent);
     border-radius: 0;
     background: transparent;
     color: inherit;
     font: inherit;
     font-size: 1.1em;
-    caret-color: var(--c-blue);
+    caret-color: var(--accent-text);
   }
   .msg textarea {
     min-height: 7.5em;
@@ -288,7 +288,7 @@ const sweep = screenScribble({ seed: 14, w: 400, h: 300, passes: 7 })
   }
   .msg input[type='text']::placeholder,
   .msg textarea::placeholder {
-    color: rgb(8 9 18 / 0.45);
+    color: color-mix(in srgb, var(--fg) 45%, transparent);
   }
   .msg input[type='text']:focus,
   .msg textarea:focus {
@@ -301,7 +301,7 @@ const sweep = screenScribble({ seed: 14, w: 400, h: 300, passes: 7 })
     bottom: 0;
     left: 0;
     height: 2px;
-    background: var(--c-blue);
+    background: var(--accent-text);
     transform: scaleX(0);
     transform-origin: right;
     transition: transform 0.6s var(--ease-house);
@@ -345,7 +345,7 @@ const sweep = screenScribble({ seed: 14, w: 400, h: 300, passes: 7 })
     display: inline-block;
     overflow: hidden;
     padding: 0.45em 0.95em;
-    border: 1px solid var(--c-ink);
+    border: 1px solid var(--fg);
     border-radius: 2em;
     font-size: 0.95em;
     isolation: isolate;
@@ -358,24 +358,24 @@ const sweep = screenScribble({ seed: 14, w: 400, h: 300, passes: 7 })
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: var(--c-ink);
+    background: var(--fg);
     clip-path: inset(0 100% 0 0);
     transition: clip-path 0.45s var(--ease-house);
   }
   .msg__chip:hover span {
-    background: rgb(8 9 18 / 0.06);
+    background: color-mix(in srgb, var(--fg) 6%, transparent);
   }
   .msg__chip:active span {
     scale: 0.96;
   }
   .msg__chip input:checked + span {
-    color: var(--c-silver);
+    color: var(--bg);
   }
   .msg__chip input:checked + span::before {
     clip-path: inset(0 0 0 0);
   }
   .msg__chip input:focus-visible + span {
-    outline: 2px solid var(--c-blue);
+    outline: 2px solid var(--accent-text);
     outline-offset: 3px;
   }
 
@@ -396,7 +396,7 @@ const sweep = screenScribble({ seed: 14, w: 400, h: 300, passes: 7 })
     font-size: 0.95em;
   }
   .msg__status a {
-    color: var(--c-blue);
+    color: var(--accent-text);
     text-decoration: underline;
     text-underline-offset: 0.2em;
   }
@@ -448,7 +448,7 @@ const sweep = screenScribble({ seed: 14, w: 400, h: 300, passes: 7 })
     width: 3.2em;
     height: 3.2em;
     fill: none;
-    stroke: var(--c-blue);
+    stroke: var(--accent-text);
     stroke-width: 4;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -471,7 +471,7 @@ const sweep = screenScribble({ seed: 14, w: 400, h: 300, passes: 7 })
     width: 100%;
     max-width: none;
     height: 100%;
-    color: var(--c-blue);
+    color: var(--accent);
     pointer-events: none;
   }
   .msg__sweep path {

@@ -5,6 +5,7 @@ import { gsap, ScrollTrigger, SplitText } from './core'
 import { initFooterReveal } from './footer'
 import { initLenis } from './lenis'
 import { initMessageBox } from './message'
+import { initScheme } from './scheme'
 import { initSplitRandom } from './split'
 import { initThemeNav, refreshNavTheme } from './theme-nav'
 import { initPageTransitions, uncover } from './transition'
@@ -237,16 +238,12 @@ function initNext() {
     })
     .to(ink, { drawSVG: '0% 85%', duration: 1, ease: 'none' }, 0)
     .to(ink, { strokeWidth: '75%', duration: 1, ease: 'power1.in' }, 0)
-    .fromTo(
-      next,
-      { backgroundColor: 'rgb(42 64 147 / 0)' },
-      { backgroundColor: 'rgb(42 64 147 / 1)', duration: 0.06, ease: 'none' },
-      0.94,
-    )
+    .fromTo(next, { '--fill': 0 }, { '--fill': 1, duration: 0.06, ease: 'none' }, 0.94)
 }
 
 async function boot() {
   initPageTransitions()
+  initScheme()
   initContactLinks()
   initYear()
   initButtons()

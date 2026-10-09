@@ -43,13 +43,8 @@ export function initScrollDraw(scope: ParentNode) {
       .to(paths, { drawSVG: '0% 85%', duration: 1, ease: 'none' }, 0)
       .to(paths, { strokeWidth: '75%', duration: 1, ease: 'power1.in' }, 0)
       // Backstop: on some screen shapes a hair of a corner is still uncovered at the very end, so
-      // the overlay itself fills with the stroke's blue over the last stretch (by then the
-      // scribble covers all but slivers, so the fill only closes them).
-      .fromTo(
-        overlay,
-        { backgroundColor: 'rgb(42 64 147 / 0)' },
-        { backgroundColor: 'rgb(42 64 147 / 1)', duration: 0.06, ease: 'none' },
-        0.94,
-      )
+      // the overlay itself fills with the accent over the last stretch (by then the scribble
+      // covers all but slivers, so the fill only closes them). See --fill in SkillsIntro.astro.
+      .fromTo(overlay, { '--fill': 0 }, { '--fill': 1, duration: 0.06, ease: 'none' }, 0.94)
   })
 }

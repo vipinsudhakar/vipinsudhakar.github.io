@@ -64,11 +64,19 @@ const path = screenScribble({ seed: 8 })
     overflow: clip;
     pointer-events: none;
   }
+  /* The backstop fill under the scribble's last stretch (src/motion/scroll-draw.ts sets --fill). */
+  .skills-intro__overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    opacity: var(--fill, 0);
+  }
   .skills-intro__overlay svg {
     width: 100%;
     max-width: none;
     height: 100%;
-    color: var(--c-blue);
+    color: var(--accent);
   }
   .skills-intro__overlay path {
     fill: none;

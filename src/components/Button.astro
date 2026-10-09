@@ -47,10 +47,10 @@ const path = buttonScribble()
 
 <style is:global>
   .btn {
-    --btn-fg: var(--c-white);
-    --btn-bg: var(--c-ink);
+    --btn-fg: var(--on-strong);
+    --btn-bg: var(--strong);
     --btn-hover-fg: var(--c-white);
-    --btn-hover-bg: var(--c-blue);
+    --btn-hover-bg: var(--accent);
     position: relative;
     display: inline-grid;
     isolation: isolate;
@@ -65,12 +65,14 @@ const path = buttonScribble()
     transition: scale 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .btn[data-variant='blue'] {
-    --btn-bg: var(--c-blue);
-    --btn-hover-bg: var(--c-ink);
+    --btn-fg: var(--c-white);
+    --btn-bg: var(--accent);
+    --btn-hover-fg: var(--on-strong);
+    --btn-hover-bg: var(--strong);
   }
   .btn[data-variant='silver'] {
-    --btn-fg: var(--c-ink);
-    --btn-bg: var(--c-silver);
+    --btn-fg: var(--panel);
+    --btn-bg: var(--on-panel);
   }
   .btn[data-variant='white'] {
     --btn-fg: var(--c-ink);

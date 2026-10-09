@@ -48,6 +48,11 @@ node scripts/grab.mjs http://localhost:5173/ src/assets/projects/filament.jpg \
 
 **Message box:** the "Send a message" box posts to Discord (one channel per kind of message) through a small relay in `relay/`. Set it up with [relay/README.md](relay/README.md), then put its address in `site.ts` → `inbox.endpoint`. Until then the box stays hidden.
 
+**Colours and the night theme:** `src/styles/tokens.css` holds the palette and the roles the
+components use (page, text, accent, text on the accent, the dark panel). The night theme (charcoal
+and crimson) redefines the roles under `:root[data-scheme='night']`; the toggle in the header
+switches it, and a visitor's choice is remembered (before that, it follows their system setting).
+
 **Check the look:** with `npm run dev` running, `node scripts/shot.mjs captures/x.png --scroll 0,900,2400`
 saves a screenshot at each scroll position (`--size 390x844` for a phone).
 

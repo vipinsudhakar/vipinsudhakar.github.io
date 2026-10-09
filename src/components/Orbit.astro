@@ -258,8 +258,8 @@ const corners =
     height: 7.5em;
     margin: -3.75em 0 0 -3.75em;
     border-radius: 50%;
-    background: var(--c-blue);
-    color: var(--c-silver);
+    background: var(--accent);
+    color: var(--on-accent);
     font-size: 0.9em;
     line-height: 1.1;
     text-align: center;
@@ -295,10 +295,10 @@ const corners =
     align-items: center;
     width: 3.5em;
     height: 3.5em;
-    border: 1px solid rgb(42 64 147 / 0.2);
-    border-left-color: rgb(42 64 147 / 0.6);
+    border: 1px solid color-mix(in srgb, var(--accent-text) 20%, transparent);
+    border-left-color: color-mix(in srgb, var(--accent-text) 60%, transparent);
     border-radius: 0.4em;
-    color: var(--c-blue);
+    color: var(--accent-text);
     transition:
       transform 0.475s var(--ease-house),
       opacity 0.475s var(--ease-house);
@@ -324,7 +324,7 @@ const corners =
     height: calc(100% + 2px);
     overflow: visible;
     fill: none;
-    stroke: var(--c-blue);
+    stroke: var(--accent-text);
     transition: transform 0.475s var(--ease-house);
   }
   .orbit__corners path {

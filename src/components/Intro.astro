@@ -53,7 +53,7 @@ const path = screenScribble({ seed: 3 })
     width: 100%;
     max-width: none;
     height: 100%;
-    color: var(--c-blue);
+    color: var(--accent);
   }
   .intro__scribble path {
     fill: none;
@@ -70,7 +70,7 @@ const path = screenScribble({ seed: 3 })
     justify-content: space-between;
     align-items: flex-end;
     padding: 0 2em 2.25em;
-    color: var(--c-silver);
+    color: var(--on-accent);
   }
   .intro__label {
     padding-bottom: 0.6em;
@@ -125,12 +125,12 @@ const path = screenScribble({ seed: 3 })
     bottom: 1em;
     left: 2em;
     height: 2px;
-    background: rgb(226 225 225 / 0.2);
+    background: color-mix(in srgb, var(--on-accent) 20%, transparent);
   }
   .intro__bar span {
     position: absolute;
     inset: 0;
-    background: var(--c-silver);
+    background: var(--on-accent);
     transform: scaleX(0);
     transform-origin: left;
   }

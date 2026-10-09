@@ -12,7 +12,8 @@ import { toolkit } from '../data/toolkit'
 const pad = (n: number) => String(n).padStart(2, '0')
 const total = toolkit.reduce((sum, { tools }) => sum + tools.length, 0)
 
-// Hover tints an icon in its brand colour, but only where that colour reads on the silver page.
+// Hover tints an icon in its brand colour, but only where that colour reads on the page: on the
+// silver of the day theme and the charcoal of the night theme, each checked separately.
 const luminance = (hex: string) => {
   const [r, g, b] = [0, 2, 4].map((i) => {
     const c = parseInt(hex.slice(i, i + 2), 16) / 255
@@ -21,7 +22,15 @@ const luminance = (hex: string) => {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b
 }
 const SILVER = luminance('e2e1e1')
-const readable = (hex: string) => (SILVER + 0.05) / (luminance(hex) + 0.05) >= 2.6
+const CHARCOAL = luminance('17171a')
+const contrast = (a: number, b: number) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+const brand = (hex: string) =>
+  [
+    contrast(SILVER, luminance(hex)) >= 2.6 && `--brand-day: #${hex}`,
+    contrast(CHARCOAL, luminance(hex)) >= 2.6 && `--brand-night: #${hex}`,
+  ]
+    .filter(Boolean)
+    .join('; ') || undefined
 ---
 
 <section class="toolkit" data-theme="dark" aria-labelledby="toolkit-title">
@@ -44,7 +53,7 @@ const readable = (hex: string) => (SILVER + 0.05) / (luminance(hex) + 0.05) >= 2
                   <li
                     class="toolkit__tool"
                     data-toolkit-chip
-                    style={icon && readable(icon.hex) ? `--brand: #${icon.hex}` : undefined}
+                    style={icon ? brand(icon.hex) : undefined}
                   >
                     {icon ? (
                       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -103,7 +112,7 @@ const readable = (hex: string) => (SILVER + 0.05) / (luminance(hex) + 0.05) >= 2
   .toolkit__sheet {
     width: 100%;
     max-width: 76em;
-    border-bottom: 1px solid rgb(8 9 18 / 0.14);
+    border-bottom: 1px solid color-mix(in srgb, var(--fg) 14%, transparent);
   }
   .toolkit__group {
     display: grid;
@@ -111,7 +120,7 @@ const readable = (hex: string) => (SILVER + 0.05) / (luminance(hex) + 0.05) >= 2
     align-items: center;
     gap: 1.5em;
     padding: 1.1em 0;
-    border-top: 1px solid rgb(8 9 18 / 0.14);
+    border-top: 1px solid color-mix(in srgb, var(--fg) 14%, transparent);
   }
   .toolkit__name {
     font-size: 0.9em;
@@ -140,9 +149,9 @@ const readable = (hex: string) => (SILVER + 0.05) / (luminance(hex) + 0.05) >= 2
     align-items: center;
     gap: 0.55em;
     padding: 0.5em 1em 0.5em 0.75em;
-    border: 1px solid rgb(8 9 18 / 0.14);
+    border: 1px solid color-mix(in srgb, var(--fg) 14%, transparent);
     border-radius: 2em;
-    background: rgb(255 255 255 / 0.3);
+    background: var(--chip);
     font-size: 0.95em;
     line-height: 1.3;
     white-space: nowrap;
@@ -158,11 +167,14 @@ const readable = (hex: string) => (SILVER + 0.05) / (luminance(hex) + 0.05) >= 2
     transition: fill 0.25s;
   }
   .toolkit__tool:hover {
-    border-color: rgb(8 9 18 / 0.32);
-    background: rgb(255 255 255 / 0.6);
+    border-color: color-mix(in srgb, var(--fg) 32%, transparent);
+    background: var(--chip-hover);
   }
   .toolkit__tool:hover svg {
-    fill: var(--brand, currentColor);
+    fill: var(--brand-day, currentColor);
+  }
+  :root[data-scheme='night'] .toolkit__tool:hover svg {
+    fill: var(--brand-night, currentColor);
   }
   /* For tools Simple Icons doesn't cover: a two-letter mark the same size as a logo. */
   .toolkit__mark {
@@ -203,11 +215,11 @@ const readable = (hex: string) => (SILVER + 0.05) / (luminance(hex) + 0.05) >= 2
   }
   .is-lanes .toolkit__window::before {
     left: 0;
-    background: linear-gradient(90deg, var(--c-silver), rgb(226 225 225 / 0));
+    background: linear-gradient(90deg, var(--bg), transparent);
   }
   .is-lanes .toolkit__window::after {
     right: 0;
-    background: linear-gradient(270deg, var(--c-silver), rgb(226 225 225 / 0));
+    background: linear-gradient(270deg, var(--bg), transparent);
   }
 
   @media (max-width: 991px) {

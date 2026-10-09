@@ -20,8 +20,8 @@ html {
 }
 
 body {
-  background: var(--c-silver);
-  color: var(--c-ink);
+  background: var(--bg);
+  color: var(--fg);
   font-family: var(--font);
   font-size: var(--size-font);
   line-height: 1.4;
@@ -83,7 +83,7 @@ button {
 
 ::selection {
   background: var(--c-white);
-  color: var(--c-blue);
+  color: var(--accent);
   text-shadow: none;
 }
 
@@ -106,10 +106,10 @@ button {
   grid-template-columns: 9em minmax(0, 1fr);
   gap: 0 1.5em;
   padding: 1.1em 0;
-  border-top: 1px solid rgb(8 9 18 / 0.2);
+  border-top: 1px solid color-mix(in srgb, var(--fg) 20%, transparent);
 }
 .facts__row:last-child {
-  border-bottom: 1px solid rgb(8 9 18 / 0.2);
+  border-bottom: 1px solid color-mix(in srgb, var(--fg) 20%, transparent);
 }
 .facts__label {
   grid-row: span 9;
@@ -151,6 +151,13 @@ button {
   }
 }
 
+/* The theme switch (src/motion/scheme.ts): the new theme spreads in a circle over the old. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 /* Keyboard users: the first Tab shows a jump past the hero. */
 .skip-link {
   position: fixed;
@@ -159,8 +166,8 @@ button {
   z-index: 1000;
   padding: 0.75em 1em;
   border-radius: 2.5em;
-  background: var(--c-ink);
-  color: var(--c-white);
+  background: var(--strong);
+  color: var(--on-strong);
   line-height: 1;
   text-transform: uppercase;
   translate: 0 -250%;
@@ -168,7 +175,7 @@ button {
 }
 .skip-link:focus-visible {
   translate: 0 0;
-  outline-color: var(--c-blue);
+  outline-color: var(--accent-text);
 }
 
 .sr-only {
@@ -184,7 +191,7 @@ button {
 }
 
 .is-blue {
-  color: var(--c-blue);
+  color: var(--accent-text);
 }
 
 .btn-row {

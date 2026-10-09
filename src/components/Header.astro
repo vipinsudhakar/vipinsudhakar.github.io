@@ -28,6 +28,12 @@ const contactHref = page ? '/#contact' : '#contact'
         <Wordmark decorative />
       </a>
     </div>
+    <button class="scheme" type="button" data-scheme-toggle aria-label="Night theme" aria-pressed="false">
+      <svg class="scheme__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle cx="12" cy="12" r="8.5"></circle>
+        <path d="M12 3.5a8.5 8.5 0 0 1 0 17z"></path>
+      </svg>
+    </button>
     <nav class="header__cta" aria-label="Get in touch">
       <Button href={contactHref} contact="email" variant="ink">Email me</Button>
       <Button href={contactHref} contact="whatsapp" variant="blue" external>WhatsApp</Button>
@@ -45,18 +51,19 @@ const contactHref = page ? '/#contact' : '#contact'
     inset: 0 0 auto;
     z-index: 99;
     padding: 1em 2em;
-    color: var(--c-ink);
+    color: var(--fg);
     transition: color 0.2s;
     pointer-events: none;
   }
   [data-nav-theme='light'] .header {
-    color: var(--c-silver);
+    color: var(--on-accent);
   }
   .header__inner {
     position: relative;
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    gap: 1em;
     max-width: calc(var(--scale-max) - 4em);
     margin-inline: auto;
   }
@@ -98,13 +105,52 @@ const contactHref = page ? '/#contact' : '#contact'
     gap: 1em;
     pointer-events: auto;
   }
+
+  /* Day or night (src/motion/scheme.ts). The half-filled circle turns over with the theme. */
+  .scheme {
+    display: grid;
+    place-items: center;
+    width: 2.5em;
+    height: 2.5em;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    pointer-events: auto;
+    transition:
+      background-color 0.25s,
+      scale 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .no-js .scheme {
+    display: none;
+  }
+  .scheme:hover {
+    background: color-mix(in srgb, currentColor 12%, transparent);
+  }
+  .scheme:active {
+    scale: 0.92;
+  }
+  .scheme__icon {
+    width: 1.15em;
+    height: 1.15em;
+    transition: rotate 0.8s var(--ease-house);
+  }
+  .scheme__icon circle {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+  }
+  .scheme__icon path {
+    fill: currentColor;
+  }
+  :root[data-scheme='night'] .scheme__icon {
+    rotate: 180deg;
+  }
   /* Over blue and black sections the pills turn light, or they would vanish into the background. */
   [data-nav-theme='light'] .header .btn {
     --btn-fg: var(--c-ink);
-    --btn-bg: var(--c-silver);
+    --btn-bg: var(--on-accent);
   }
   [data-nav-theme='light'] .header .btn[data-variant='blue'] {
-    --btn-fg: var(--c-blue);
+    --btn-fg: var(--accent);
     --btn-bg: var(--c-white);
   }
 
@@ -152,8 +198,12 @@ const contactHref = page ? '/#contact' : '#contact'
       --brand-w: 12em;
       --brand-y: 130%;
     }
+    .header__inner,
     .header__cta {
       gap: 0.75em;
+    }
+    .scheme {
+      font-size: 0.875em;
     }
     .blur-strip {
       height: 6em;
@@ -167,13 +217,21 @@ const contactHref = page ? '/#contact' : '#contact'
       --brand-w: 9em;
       --brand-y: 140%;
     }
+    .header__inner,
     .header__cta {
       gap: 0.5em;
     }
   }
+  /* Small phones: a slightly smaller corner wordmark and controls, so the theme toggle and both
+     pills fit beside the name. */
   @media (max-width: 479px) {
     .brand {
+      --brand-w: 7.25em;
       --brand-y: 180%;
+    }
+    .header__cta .btn,
+    .scheme {
+      font-size: 0.8em;
     }
   }
 </style>

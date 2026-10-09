@@ -55,6 +55,15 @@ const person = {
     <script is:inline>
       document.documentElement.classList.replace('no-js', 'js')
       history.scrollRestoration = 'manual'
+      // Day or night (tokens.css): the visitor's last choice, else their system's setting.
+      ;(() => {
+        let saved = null
+        try {
+          saved = localStorage.getItem('vs:scheme')
+        } catch {}
+        const night = saved ? saved === 'night' : matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.dataset.scheme = night ? 'night' : 'day'
+      })()
     </script>
     {
       intro && (
@@ -70,7 +79,7 @@ const person = {
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preload" href={archivo} as="font" type="font/woff2" crossorigin />
-    <meta name="theme-color" content="#e2e1e1" />
+    <meta name="theme-color" content="#e2e1e1" data-theme-color />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />

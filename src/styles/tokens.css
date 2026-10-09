@@ -6,11 +6,28 @@
    and a range it is clamped to.
    --------------------------------------------------------------------------------------------- */
 :root {
+  /* The palette. Components use the roles below, so the night theme can swap them; only white
+     and ink appear directly, where a colour stays the same in both themes. */
   --c-silver: #e2e1e1;
   --c-ink: #080912;
   --c-blue: #2a4093;
   --c-deep: #273879;
   --c-white: #ffffff;
+
+  /* Roles, day theme. */
+  --bg: var(--c-silver); /* the page */
+  --bg-glow: #eaeae9; /* the hero placeholder's centre */
+  --fg: var(--c-ink); /* text on the page */
+  --accent: var(--c-blue); /* the brand colour: scribbles, the blue sections, accent buttons */
+  --accent-text: var(--c-blue); /* the accent as small text on the page: links, labels, figures */
+  --accent-deep: var(--c-deep); /* a shade darker, on the accent */
+  --on-accent: var(--c-silver); /* text and marks on the accent */
+  --panel: var(--c-ink); /* the dark Contact section */
+  --on-panel: var(--c-silver);
+  --strong: var(--c-ink); /* solid buttons */
+  --on-strong: var(--c-white);
+  --chip: rgb(255 255 255 / 0.3); /* the Toolkit's pills */
+  --chip-hover: rgb(255 255 255 / 0.6);
 
   --font: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
   --ease-house: cubic-bezier(0.625, 0.05, 0, 1);
@@ -21,6 +38,27 @@
   --scale-max: 1920px;
   --scale-width: clamp(var(--scale-min), 100vw, var(--scale-max));
   --size-font: calc(var(--scale-width) / (var(--scale-ideal) / 16));
+}
+
+/* The night theme: warm charcoal with a deep crimson in the blue's place, set on <html> by the
+   head script in Base.astro and the toggle in the header (src/motion/scheme.ts). The crimson sits
+   where the blue does, neither bright nor dark; as small text it lifts a step so it still reads
+   on the charcoal. */
+:root[data-scheme='night'] {
+  --bg: #17171a;
+  --bg-glow: #1f1f23;
+  --fg: #ece8e3;
+  --accent: #b4262f;
+  --accent-text: #e8545b;
+  --accent-deep: #8a1c24;
+  --on-accent: #f3eeea;
+  --panel: #0d0d0f;
+  --on-panel: #ece8e3;
+  --strong: #ece8e3;
+  --on-strong: #17171a;
+  --chip: rgb(255 255 255 / 0.04);
+  --chip-hover: rgb(255 255 255 / 0.1);
+  color-scheme: dark;
 }
 
 /* Tablet: designed at 834. */
