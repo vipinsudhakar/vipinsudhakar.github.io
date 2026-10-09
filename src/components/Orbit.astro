@@ -1,10 +1,13 @@
 ---
 /**
  * Project cards on a slowly turning orbit (src/motion/orbit.ts). The front card opens up and plays
- * its preview; the panel on the left tells you what it is. With few projects the ring repeats them
- * so it never looks empty, while the counter and the text only ever show the real ones.
+ * its preview, and opens the project's write-up (a "View project" badge follows the cursor over
+ * it); the panel on the left tells you what it is, with a View project button and the links.
+ * With few projects the ring repeats them so it never looks empty, while the counter and the text
+ * only ever show the real ones.
  */
 import { getImage, Picture } from 'astro:assets'
+import Button from './Button.astro'
 import Plate from './Plate.astro'
 import { projects } from '../data/projects'
 
@@ -53,12 +56,12 @@ const corners =
                     {p.context}
                   </p>
                 )}
+                <div class="orbit__actions" data-orbit-fade>
+                  <Button href={`/projects/${p.slug}`} variant="blue">
+                    View project
+                  </Button>
+                </div>
                 <ul class="orbit__meta" data-orbit-fade>
-                  <li>
-                    <a data-underline href={`/projects/${p.slug}`}>
-                      Read the write-up
-                    </a>
-                  </li>
                   {p.liveUrl && (
                     <li>
                       <a data-underline href={p.liveUrl} target="_blank" rel="noopener">
@@ -101,6 +104,7 @@ const corners =
     </div>
 
     <div class="orbit__stage">
+      <span class="orbit__cursor" data-orbit-cursor aria-hidden="true">View project</span>
       <div class="orbit__list" data-orbit-list>
         {
           tiles.map((index, i) => {
@@ -110,10 +114,8 @@ const corners =
                 <a
                   class="orbit__card"
                   data-orbit-card
-                  href={p.liveUrl ?? p.repoUrl ?? '#projects'}
-                  target="_blank"
-                  rel="noopener"
-                  aria-label={`Open ${p.title}`}
+                  href={`/projects/${p.slug}`}
+                  aria-label={`View the ${p.title} project`}
                 >
                   <span class="orbit__mask">
                     {p.poster ? (
@@ -240,6 +242,33 @@ const corners =
     .orbit__context {
       font-size: 0.78em;
     }
+  }
+  .orbit__actions {
+    margin-top: 1.5em;
+  }
+  /* Follows the pointer over the front card (src/motion/orbit.ts). */
+  .orbit__cursor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3000;
+    display: grid;
+    place-items: center;
+    width: 7.5em;
+    height: 7.5em;
+    margin: -3.75em 0 0 -3.75em;
+    border-radius: 50%;
+    background: var(--c-blue);
+    color: var(--c-silver);
+    font-size: 0.9em;
+    line-height: 1.1;
+    text-align: center;
+    text-transform: uppercase;
+    pointer-events: none;
+    transform: scale(0);
+  }
+  .orbit__card {
+    cursor: pointer;
   }
   .orbit__meta {
     display: flex;

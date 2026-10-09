@@ -1,4 +1,4 @@
-import { gsap, ScrollTrigger, select, SplitText } from './core'
+import { finePointer, gsap, ScrollTrigger, select, SplitText } from './core'
 
 /**
  * The project ring (markup in Orbit.astro). Tiles sit on a line through the centre, spaced evenly
@@ -199,16 +199,57 @@ function setUp(root: HTMLElement) {
     }
   })
 
-  // Swipe sideways on touch screens.
+  // Swipe sideways on touch screens. A swipe that ends on the front card mustn't open it too.
   let startX: number | null = null
+  let swiped = false
   const stage = list.parentElement ?? list
   stage.addEventListener('pointerdown', (event) => {
+    swiped = false
     if (event.pointerType === 'touch') startX = event.clientX
   })
   stage.addEventListener('pointerup', (event) => {
     if (startX === null) return
     const dx = event.clientX - startX
     startX = null
-    if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1)
+    if (Math.abs(dx) > 40) {
+      swiped = true
+      go(dx < 0 ? 1 : -1)
+    }
   })
+  stage.addEventListener(
+    'click',
+    (event) => {
+      if (!swiped) return
+      swiped = false
+      event.preventDefault()
+      event.stopPropagation()
+    },
+    true,
+  )
+
+  // Over the front card, a "View project" badge follows the pointer (mouse only).
+  const cursor = root.querySelector<HTMLElement>('[data-orbit-cursor]')
+  if (cursor && finePointer) {
+    const moveX = gsap.quickTo(cursor, 'x', { duration: 0.45, ease: 'power3' })
+    const moveY = gsap.quickTo(cursor, 'y', { duration: 0.45, ease: 'power3' })
+    let shown = false
+    const show = (on: boolean) => {
+      if (on === shown) return
+      shown = on
+      gsap.to(cursor, {
+        scale: on ? 1 : 0,
+        duration: on ? 0.5 : 0.3,
+        ease: on ? 'back.out(1.6)' : 'power3.in',
+        overwrite: 'auto',
+      })
+    }
+    gsap.set(cursor, { scale: 0 })
+    stage.addEventListener('pointermove', (event) => {
+      const box = stage.getBoundingClientRect()
+      moveX(event.clientX - box.left)
+      moveY(event.clientY - box.top)
+      show((event.target as Element | null)?.closest('[data-orbit-tile]') === tiles[front])
+    })
+    stage.addEventListener('pointerleave', () => show(false))
+  }
 }

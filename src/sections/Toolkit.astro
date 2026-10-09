@@ -3,9 +3,7 @@
  * The scattered TOOLKIT word, then every tool used across the repos (src/data/toolkit.ts).
  *
  * As written this is a calm spec sheet, one wrapping row per group, which is what shows without
- * JS. src/motion/toolkit.ts turns it into the scroll moment: the stage pins,
- * the tools start scattered through 3D space and fly into six lanes as you scroll (a counter ticks
- * up as they land), then each lane picks up speed into a rolling bar that carries every tool through
+ * JS. src/motion/toolkit.ts turns each group into a rolling bar that carries every tool through
  * view and answers your scroll speed.
  */
 import { copy } from '../data/copy'
@@ -124,7 +122,7 @@ const readable = (hex: string) => (SILVER + 0.05) / (luminance(hex) + 0.05) >= 2
   .toolkit__count {
     margin-left: 0.5em;
     font-weight: 400;
-    opacity: 0.45;
+    opacity: 0.7;
   }
   .toolkit__window {
     position: relative;
@@ -181,34 +179,17 @@ const readable = (hex: string) => (SILVER + 0.05) / (luminance(hex) + 0.05) >= 2
     line-height: 1;
   }
 
-  /* Lanes (src/motion/toolkit.ts): each group is one line that drifts sideways. */
-  .toolkit__stage.is-lanes {
-    justify-content: center;
-    min-height: 100vh;
-    min-height: 100svh;
-    padding: 5em 0 2em;
-  }
-  .is-lanes .toolkit__sheet {
-    perspective: 1100px;
-  }
-  .is-lanes .toolkit__group,
+  /* Lanes (src/motion/toolkit.ts): each group is one rolling line, clipped to its window with
+     soft edges. */
   .is-lanes .toolkit__window {
-    transform-style: preserve-3d;
+    overflow: hidden;
   }
   .is-lanes .toolkit__list {
     flex-wrap: nowrap;
     width: max-content;
     /* Starts the first tool clear of the left edge fade. */
     padding-left: 3em;
-    transform-style: preserve-3d;
     will-change: transform;
-  }
-  .is-lanes .toolkit__tool {
-    will-change: transform, opacity;
-  }
-  /* Once everything has landed, each lane clips to its window, with soft edges. */
-  .is-lanes.is-sorted .toolkit__window {
-    overflow: hidden;
   }
   .is-lanes .toolkit__window::before,
   .is-lanes .toolkit__window::after {
@@ -218,9 +199,7 @@ const readable = (hex: string) => (SILVER + 0.05) / (luminance(hex) + 0.05) >= 2
     bottom: 0;
     z-index: 1;
     width: 4em;
-    opacity: 0;
     pointer-events: none;
-    transition: opacity 0.4s;
   }
   .is-lanes .toolkit__window::before {
     left: 0;
@@ -229,10 +208,6 @@ const readable = (hex: string) => (SILVER + 0.05) / (luminance(hex) + 0.05) >= 2
   .is-lanes .toolkit__window::after {
     right: 0;
     background: linear-gradient(270deg, var(--c-silver), rgb(226 225 225 / 0));
-  }
-  .is-lanes.is-sorted .toolkit__window::before,
-  .is-lanes.is-sorted .toolkit__window::after {
-    opacity: 1;
   }
 
   @media (max-width: 991px) {
