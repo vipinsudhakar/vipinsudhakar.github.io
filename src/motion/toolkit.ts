@@ -8,8 +8,9 @@ const DRIFT = 26
  * The Toolkit's scroll moment (markup in Toolkit.astro).
  *
  * 1. Chaos: the tools hang scattered through 3D space as the stage arrives.
- * 2. Order: the stage pins, and scrolling flies every tool into its group's lane, lane by lane,
- *    while the count climbs to the total. The scroll curve shapes each flight.
+ * 2. Order: scrolling flies every tool into its group's lane, lane by lane, while the count climbs
+ *    to the total. It starts as the stage rises and finishes pinned. The scroll curve shapes
+ *    each flight.
  * 3. Drift: once all have landed, each lane becomes a marquee (alternate lanes run opposite ways).
  *    Scrolling speeds them up, skews them a little and, scrolling back up, reverses them; hovering
  *    a lane slows it so a tool can be read.
@@ -142,16 +143,26 @@ function setUp(stage: HTMLElement, lenis: Lenis | null) {
     }
   }
 
+  const pinLength = () => (window.innerWidth < 768 ? 1.1 : 1.5) * window.innerHeight
   ScrollTrigger.create({
-    animation: tl,
     trigger: stage,
     start: 'top top',
-    end: () => (window.innerWidth < 768 ? '+=110%' : '+=150%'),
+    end: () => `+=${pinLength()}`,
     pin: true,
     // The section is a flex column, where GSAP leaves pin spacing off unless asked.
     pinSpacing: true,
-    scrub: 0.5,
     anticipatePin: 1,
+    invalidateOnRefresh: true,
+  })
+  // The tools start flying while the stage is still rising into place, so the sort is already
+  // moving when it pins; it ends with the pin.
+  const lead = 0.35
+  ScrollTrigger.create({
+    animation: tl,
+    trigger: stage,
+    start: `top ${lead * 100}%`,
+    end: () => `+=${pinLength() + lead * window.innerHeight}`,
+    scrub: 0.5,
     invalidateOnRefresh: true,
     onUpdate: (self) => setSorted(self.progress > 0.985),
   })

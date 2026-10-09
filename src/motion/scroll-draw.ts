@@ -4,6 +4,10 @@ import { refreshNavTheme } from './theme-nav'
 /**
  * Pins the section while a scribble draws across it and its stroke swells until the screen is
  * solid blue, handing over to the blue section that follows (see SkillsIntro.astro).
+ *
+ * Timed so the blue keeps building for the whole pin: the line draws at an even pace from where
+ * it enters the screen (the first 6% starts off the edge), while the stroke thickens ever faster,
+ * closing the last gaps just as the pin lets go. (captures/coverage2.mjs measured the schedule.)
  */
 export function initScrollDraw(scope: ParentNode) {
   select(scope, '[data-scroll-draw]').forEach((wrap) => {
@@ -14,13 +18,13 @@ export function initScrollDraw(scope: ParentNode) {
 
     const fit = () => void gsap.set(wrap, { height: Math.max(content.scrollHeight, window.innerHeight) })
     fit()
-    gsap.set(paths, { drawSVG: '0% 0%', strokeWidth: '5%' })
+    gsap.set(paths, { drawSVG: '0% 6%', strokeWidth: '5%' })
     gsap
       .timeline({
         scrollTrigger: {
           trigger: wrap,
           start: 'top top',
-          end: '+=200%',
+          end: '+=150%',
           scrub: true,
           pin: true,
           anticipatePin: 1,
@@ -28,7 +32,7 @@ export function initScrollDraw(scope: ParentNode) {
           onRefreshInit: fit,
           // Light header text once the blue has covered the top of the screen.
           onUpdate: ({ progress }) => {
-            const theme = progress > 0.35 ? 'light' : 'dark'
+            const theme = progress > 0.33 ? 'light' : 'dark'
             if (wrap.dataset.theme !== theme) {
               wrap.dataset.theme = theme
               refreshNavTheme()
@@ -36,7 +40,7 @@ export function initScrollDraw(scope: ParentNode) {
           },
         },
       })
-      .to(paths, { drawSVG: '0% 85%', duration: 1, ease: 'scroll' }, 0)
-      .to(paths, { strokeWidth: '80%', duration: 0.75, ease: 'scroll' }, 0.25)
+      .to(paths, { drawSVG: '0% 85%', duration: 1, ease: 'none' }, 0)
+      .to(paths, { strokeWidth: '75%', duration: 1, ease: 'power1.in' }, 0)
   })
 }

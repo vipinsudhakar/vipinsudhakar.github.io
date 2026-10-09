@@ -37,7 +37,8 @@ export function initExpertise(scope: ParentNode) {
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: () => `+=${window.innerHeight * items.length}`,
+          // One screen of scroll per step.
+          end: () => `+=${window.innerHeight * (items.length - 1)}`,
           scrub: true,
           pin: true,
           anticipatePin: 1,
@@ -47,15 +48,15 @@ export function initExpertise(scope: ParentNode) {
       })
       items.slice(0, -1).forEach((current, i) => {
         const next = items[i + 1]
-        tl.to(current.visual, { height: 0, duration: 1, ease: 'scroll' }, i)
-          .to(current.img, { clipPath: 'inset(0% 0% 0% 100%)', duration: 1, ease: 'scroll' }, i)
+        tl.to(current.visual, { height: 0, duration: 1, ease: 'scroll-step' }, i)
+          .to(current.img, { clipPath: 'inset(0% 0% 0% 100%)', duration: 1, ease: 'scroll-step' }, i)
           .fromTo(
             next.img,
             { clipPath: 'inset(0% 100% 0% 0%)' },
-            { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'scroll' },
+            { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'scroll-step' },
             i,
           )
-          .to(list, { y: () => rise(i + 1), duration: 1, ease: 'scroll' }, i)
+          .to(list, { y: () => rise(i + 1), duration: 1, ease: 'scroll-step' }, i)
       })
 
       return () => {

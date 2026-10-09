@@ -1,7 +1,9 @@
 ---
 /**
- * The load intro: a blue scribble covers the screen, the signature writes itself and erases,
- * then the scribble pulls away to reveal the page. Timeline in src/motion/intro.ts.
+ * The load intro. First paint is solid blue (the scribble at full width), with a loader: a
+ * rolling percentage and a thin progress line that follow the real loading. At 100 the loader
+ * rolls away, the signature writes itself and erases, then the scribble pulls away to reveal the
+ * page. Scrolling is locked until then. Timeline in src/motion/intro.ts.
  * Hidden without JS; a CSS failsafe removes it if the scripts never run.
  */
 import { signature } from '../data/signature'
@@ -14,6 +16,18 @@ const path = screenScribble({ seed: 3 })
   <svg class="intro__scribble" viewBox="0 0 3200 3100" preserveAspectRatio="none" focusable="false">
     <path d={path} data-intro-scribble></path>
   </svg>
+  <div class="intro__loader" data-loader>
+    <p class="intro__label"><span>Loading</span></p>
+    <p class="intro__count">
+      <span class="intro__roll" data-loader-roll>
+        <span class="intro__col"><span class="intro__strip" data-loader-digit><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i></span></span>
+        <span class="intro__col"><span class="intro__strip" data-loader-digit><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i></span></span>
+        <span class="intro__col"><span class="intro__strip" data-loader-digit><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i></span></span>
+        <span class="intro__pct">%</span>
+      </span>
+    </p>
+    <span class="intro__bar"><span data-loader-bar></span></span>
+  </div>
   {
     signature.paths.length > 0 && (
       <svg class="intro__signature" viewBox={signature.viewBox} data-intro-signature focusable="false">
@@ -36,7 +50,7 @@ const path = screenScribble({ seed: 3 })
   }
   .js .intro {
     display: block;
-    animation: failsafe-hide 0s linear 6s forwards;
+    animation: failsafe-hide 0s linear 10s forwards;
   }
   @keyframes failsafe-hide {
     to {
@@ -58,6 +72,85 @@ const path = screenScribble({ seed: 3 })
     stroke-linecap: round;
     stroke-linejoin: round;
   }
+  /* The loader: a label on the left, an odometer percentage on the right, a line along the foot. */
+  .intro__loader {
+    position: absolute;
+    inset: auto 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 2em 2.25em;
+    color: var(--c-silver);
+  }
+  .intro__label {
+    padding-bottom: 0.6em;
+    font-size: 1em;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+  .intro__count {
+    overflow: hidden;
+    font-size: 11em;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 0.82;
+    letter-spacing: -0.02em;
+  }
+  .intro__roll {
+    display: flex;
+    align-items: flex-start;
+  }
+  /* Each digit is a strip of 0-9 twice over in a one-digit window. The script rolls it forward to
+     the next number, into the second run when it wraps past 9, then quietly resets. */
+  .intro__col {
+    display: block;
+    height: 0.82em;
+    overflow: hidden;
+  }
+  .intro__strip {
+    display: flex;
+    flex-direction: column;
+  }
+  .intro__strip i {
+    display: block;
+    height: 0.82em;
+    font-style: normal;
+  }
+  .intro__col:first-child {
+    width: 0;
+    transition: width 0.4s var(--ease-house);
+  }
+  .intro__count.is-full .intro__col:first-child {
+    width: 0.62em;
+  }
+  .intro__pct {
+    margin: 0.06em 0 0 0.05em;
+    font-size: 0.28em;
+    font-weight: 600;
+  }
+  .intro__bar {
+    position: absolute;
+    right: 2em;
+    bottom: 1em;
+    left: 2em;
+    height: 2px;
+    background: rgb(226 225 225 / 0.2);
+  }
+  .intro__bar span {
+    position: absolute;
+    inset: 0;
+    background: var(--c-silver);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .intro__label {
+    overflow: hidden;
+  }
+  .intro__label span {
+    display: block;
+  }
+
   .intro__signature {
     position: absolute;
     top: 50%;
@@ -66,6 +159,22 @@ const path = screenScribble({ seed: 3 })
     translate: -50% -50%;
     color: var(--c-silver);
     visibility: hidden;
+  }
+  @media (max-width: 767px) {
+    .intro__loader {
+      padding: 0 1em 1.75em;
+    }
+    .intro__count {
+      font-size: 6em;
+    }
+    .intro__label {
+      font-size: 0.85em;
+    }
+    .intro__bar {
+      right: 1em;
+      left: 1em;
+      bottom: 0.75em;
+    }
   }
   .intro__signature path {
     fill: none;

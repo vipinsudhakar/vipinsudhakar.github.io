@@ -12,11 +12,16 @@ CustomEase.create('house', '0.625, 0.05, 0, 1')
 CustomEase.create('ink', '0.78, 0.18, 0.18, 1')
 /**
  * How scroll-linked effects follow the scroll. Rather than moving in lockstep with the wheel, an
- * effect picks up quickly and then settles slowly as it nears its end. Every scrubbed animation
- * uses it (except the parallax and the footer reveal, which must track the scroll exactly), so
- * retune the feel of them all here.
+ * effect answers the first notch straight away (a little ahead of the scroll), then settles
+ * gently as it nears its end. Neither end goes flat: a curve that starts or finishes at zero
+ * speed leaves a stretch where you scroll and nothing moves. Most scrubbed effects use it.
  */
-CustomEase.create('scroll', '0.4, 0, 0.2, 1')
+CustomEase.create('scroll', '0.18, 0.32, 0.36, 0.82')
+/**
+ * For scrubbed effects chained step after step (the Expertise panels): a soft S that eases into
+ * and out of each step but never stops, so one step hands its speed to the next.
+ */
+CustomEase.create('scroll-step', '0.35, 0.15, 0.65, 0.85')
 
 export const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
 

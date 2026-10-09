@@ -56,7 +56,8 @@ export function initContactWords(scope: ParentNode) {
     const spots = [...ring(8, 42, 38, 0), ...ring(8, 24, 22, Math.PI / 8)]
     const random = gsap.utils.random
     const tl = gsap.timeline({
-      scrollTrigger: { trigger: section, start: 'top top', end: 'bottom bottom', scrub: 1 },
+      // Starts as the section rises into view, so something is already moving when it settles.
+      scrollTrigger: { trigger: section, start: 'top 60%', end: 'bottom bottom', scrub: 1 },
     })
 
     for (let i = 0; i < COUNT; i++) {
@@ -89,7 +90,7 @@ export function initContactWords(scope: ParentNode) {
           y: `${y}vh`,
           z: 0,
           scale: size,
-          autoAlpha: random(0.25, 0.6),
+          autoAlpha: random(0.3, 0.7),
           filter: 'blur(0px)',
           duration: arrive,
           ease: 'power1.inOut',

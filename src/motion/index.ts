@@ -6,7 +6,7 @@ import { initContactWords } from './contact-words'
 import { ScrollTrigger } from './core'
 import { initExpertise } from './expertise'
 import { initFooterReveal } from './footer'
-import { playIntro } from './intro'
+import { playIntro, startLoader } from './intro'
 import { initLenis } from './lenis'
 import { initLogoScroll } from './logo-scroll'
 import { initMessageBox } from './message'
@@ -19,7 +19,15 @@ import { initToolkit } from './toolkit'
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
+const pageLoaded = () =>
+  document.readyState === 'complete'
+    ? Promise.resolve()
+    : new Promise<void>((resolve) => window.addEventListener('load', () => resolve(), { once: true }))
+
 async function boot() {
+  // The loader takes over from the blue first frame; scrolling stays locked (html.is-loading).
+  const loader = startLoader()
+  loader.set(24)
   window.scrollTo(0, 0)
   initContactLinks()
   initYear()
@@ -27,9 +35,10 @@ async function boot() {
 
   // Text splitting measures lines, so let the webfont arrive first (but don't hang on it).
   await Promise.race([document.fonts.ready, wait(2500)])
+  loader.set(55)
 
   const lenis = initLenis()
-  lenis?.stop()
+  lenis.stop()
   initThemeNav()
   initLogoScroll()
 
@@ -51,9 +60,15 @@ async function boot() {
   initAnchors(lenis)
   initMessageBox(lenis)
   ScrollTrigger.refresh()
+  loader.set(85)
 
+  await Promise.race([pageLoaded(), wait(4000)])
+  ScrollTrigger.refresh()
+  await loader.finish()
+  window.scrollTo(0, 0)
   await playIntro()
-  lenis?.start()
+  document.documentElement.classList.remove('is-loading')
+  lenis.start()
   if (location.hash) scrollToHash(location.hash, lenis)
 }
 

@@ -34,7 +34,9 @@ const person = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script is:inline>
+      // is-loading locks scrolling until the intro has played (see global.css and motion/intro.ts).
       document.documentElement.classList.replace('no-js', 'js')
+      document.documentElement.classList.add('is-loading')
       history.scrollRestoration = 'manual'
     </script>
     <title>{site.title}</title>

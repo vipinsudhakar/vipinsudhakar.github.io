@@ -145,10 +145,24 @@ button {
   transform-origin: left;
 }
 
+/* No scrolling while the page loads and the intro plays; the scripts lift this when they're done.
+   If they never run, the lock lifts by itself after 10s, together with the intro's failsafes. */
+html.is-loading,
+html.is-loading body {
+  overflow: hidden;
+  overscroll-behavior: none;
+  animation: failsafe-unlock 0s linear 10s forwards;
+}
+@keyframes failsafe-unlock {
+  to {
+    overflow: visible;
+  }
+}
+
 /* Hero items wait for the intro to reveal them. If the scripts never run, they show up anyway. */
 .js [data-intro-reveal] {
   visibility: hidden;
-  animation: failsafe-show 0s linear 6s forwards;
+  animation: failsafe-show 0s linear 10s forwards;
 }
 @keyframes failsafe-show {
   to {
