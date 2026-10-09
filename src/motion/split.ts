@@ -1,11 +1,27 @@
 import { gsap, select, SplitText } from './core'
 
+/**
+ * Keeps letter-split text readable by screen readers. A heading can carry its whole text as a
+ * label (SplitText's 'auto'). Other elements can't take one, so the split copy is hidden and a
+ * visually hidden copy of the text sits right after it. (Line splits keep whole words and read
+ * fine as they are, so they use 'none'.)
+ */
+function charsAria(el: HTMLElement): 'auto' | 'hidden' {
+  if (/^H[1-6]$/.test(el.tagName)) return 'auto'
+  const copy = document.createElement('span')
+  copy.className = 'sr-only'
+  copy.textContent = el.textContent?.trim() ?? ''
+  el.after(copy)
+  return 'hidden'
+}
+
 /** Letters roll up into place in 3D, one after another, as the text scrolls into view. */
 export function initSplitRolling(scope: ParentNode) {
   select(scope, '[data-split-rolling]').forEach((el) => {
     SplitText.create(el, {
       type: 'lines, chars',
       mask: 'lines',
+      aria: charsAria(el),
       autoSplit: true,
       onSplit(self) {
         const depth = 0.6 * parseFloat(getComputedStyle(el).fontSize)
@@ -32,6 +48,7 @@ export function initSplitLines(scope: ParentNode) {
     SplitText.create(el, {
       type: 'lines',
       mask: 'lines',
+      aria: 'none',
       autoSplit: true,
       onSplit(self) {
         return gsap.from(self.lines, {
@@ -51,6 +68,7 @@ export function initSplitRandom(scope: ParentNode) {
   select(scope, '[data-split-random]').forEach((el) => {
     SplitText.create(el, {
       type: 'chars',
+      aria: charsAria(el),
       autoSplit: true,
       onSplit(self) {
         const spread = Math.min(

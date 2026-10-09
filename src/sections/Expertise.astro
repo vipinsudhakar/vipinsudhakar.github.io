@@ -3,6 +3,7 @@
  * Numbered areas of expertise on blue. On wide screens the section pins and each scroll step
  * closes one panel as the next opens (src/motion/expertise.ts); elsewhere it is a plain list.
  */
+import { Picture } from 'astro:assets'
 import Plate from '../components/Plate.astro'
 import { expertise } from '../data/expertise'
 ---
@@ -23,7 +24,15 @@ import { expertise } from '../data/expertise'
               <p class="xp__desc">{area.text}</p>
               <div class="xp__img" data-xp-img>
                 {area.image ? (
-                  <img src={area.image} alt={area.alt ?? ''} loading="lazy" draggable="false" />
+                  <Picture
+                    src={area.image}
+                    formats={['avif', 'webp']}
+                    widths={[640, 1024, 1440, 1600]}
+                    sizes="(max-width: 991px) 100vw, 71vw"
+                    alt={area.alt ?? ''}
+                    loading="lazy"
+                    draggable="false"
+                  />
                 ) : (
                   <Plate label={area.title} seed={31 + i * 7} />
                 )}
@@ -93,7 +102,8 @@ import { expertise } from '../data/expertise'
     aspect-ratio: 16 / 9;
     overflow: hidden;
   }
-  .xp__img > img,
+  .xp__img > picture,
+  .xp__img img,
   .xp__img > .plate {
     width: 100%;
     height: 100%;

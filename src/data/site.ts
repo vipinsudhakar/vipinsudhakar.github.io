@@ -21,6 +21,16 @@ export const site = {
   /** A PDF under public/, e.g. '/resume.pdf'. null hides the Resume button. */
   resume: null as string | null,
 
+  /** Where you study. Also used by search engines (Base.astro) and the résumé. */
+  education: {
+    degree: 'B.Tech in Artificial Intelligence and Data Science',
+    school: 'Amrita Vishwa Vidyapeetham',
+    campus: 'Coimbatore',
+    start: 2025,
+    end: 2029,
+    cgpa: '9.1/10',
+  },
+
   contact: {
     /** Name and domain, joined with @ in the browser. */
     email: ['vipinsudhakar007', 'gmail.com'],

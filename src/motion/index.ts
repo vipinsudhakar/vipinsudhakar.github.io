@@ -19,6 +19,16 @@ import { initToolkit } from './toolkit'
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
+// Set once the intro has played, so a reload in the same session gets the quick loader.
+const SEEN = 'vs:intro-seen'
+const seenIntro = () => {
+  try {
+    return sessionStorage.getItem(SEEN) === '1'
+  } catch {
+    return false
+  }
+}
+
 const pageLoaded = () =>
   document.readyState === 'complete'
     ? Promise.resolve()
@@ -26,7 +36,7 @@ const pageLoaded = () =>
 
 async function boot() {
   // The loader takes over from the blue first frame; scrolling stays locked (html.is-loading).
-  const loader = startLoader()
+  const loader = startLoader({ quick: seenIntro() })
   loader.set(24)
   window.scrollTo(0, 0)
   initContactLinks()
@@ -67,6 +77,11 @@ async function boot() {
   await loader.finish()
   window.scrollTo(0, 0)
   await playIntro()
+  try {
+    sessionStorage.setItem(SEEN, '1')
+  } catch {
+    // Storage blocked: every visit gets the full loader.
+  }
   document.documentElement.classList.remove('is-loading')
   lenis.start()
   if (location.hash) scrollToHash(location.hash, lenis)

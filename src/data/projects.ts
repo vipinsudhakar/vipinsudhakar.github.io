@@ -1,3 +1,8 @@
+import caac from '../assets/projects/caac.jpg'
+import filament from '../assets/projects/filament.jpg'
+import strand from '../assets/projects/strand.jpg'
+import trialbridge from '../assets/projects/trialbridge.jpg'
+
 export type Project = {
   title: string
   blurb: string
@@ -5,8 +10,8 @@ export type Project = {
   status: 'live' | 'building'
   liveUrl?: string
   repoUrl?: string
-  /** A still under public/, 4:3 works best. Without one, the card shows a styled placeholder. */
-  poster?: string
+  /** A still imported from src/assets/projects, 4:3 works best. Without one, the card shows a styled placeholder. */
+  poster?: ImageMetadata
   /** A short, silent loop under public/ (webm). It plays on the card in front. */
   video?: string
   /** One line of background, e.g. the team, the event and your part in it. */
@@ -15,8 +20,8 @@ export type Project = {
 }
 
 /**
- * The projects in the ring, in order. To add one, append an object and drop its poster
- * and video into public/images/projects and public/videos.
+ * The projects in the ring, in order. To add one, append an object, put its poster in
+ * src/assets/projects (and import it above) and its video in public/videos.
  */
 export const projects: Project[] = [
   {
@@ -26,7 +31,8 @@ export const projects: Project[] = [
     status: 'live',
     liveUrl: 'https://trialbridge-beta.vercel.app',
     repoUrl: 'https://github.com/vipinsudhakar/hacktoberfest-hack-day-coimbatore-x-init-club-and-idea-club',
-    poster: '/images/projects/trialbridge.jpg',
+    poster: trialbridge,
+    video: '/videos/trialbridge.webm',
     context: 'Team Latent at Hacktoberfest Hack Day Coimbatore. I built the architecture and the Gemma integration.',
     stack: ['Next.js', 'Gemma 4', 'TypeScript', 'ClinicalTrials.gov'],
   },
@@ -37,7 +43,7 @@ export const projects: Project[] = [
     status: 'live',
     liveUrl: 'https://vipinsudhakar.github.io/filament/',
     repoUrl: 'https://github.com/vipinsudhakar/filament',
-    poster: '/images/projects/filament.jpg',
+    poster: filament,
     video: '/videos/filament.webm',
     stack: ['WebGPU', 'WGSL', 'TypeScript', 'React'],
   },
@@ -48,7 +54,21 @@ export const projects: Project[] = [
     status: 'live',
     liveUrl: 'https://strand-0rgw.onrender.com',
     repoUrl: 'https://github.com/vipinsudhakar/Strand',
-    poster: '/images/projects/strand.jpg',
+    poster: strand,
+    video: '/videos/strand.webm',
     stack: ['FastAPI', 'Biopython', 'ESMFold', 'React'],
+  },
+  {
+    title: 'CAAC',
+    blurb:
+      "Tamper-evident logs where a change stays local. Entries are hashed into a forest of Merkle trees, cut where the content says, so absorbing an insertion into 100,000 entries takes about 62× fewer hashes than the base paper's pipeline.",
+    status: 'live',
+    liveUrl: 'https://caac-cicn.onrender.com',
+    repoUrl: 'https://github.com/vipinsudhakar/merkle-log-integrity',
+    poster: caac,
+    video: '/videos/caac.webm',
+    context:
+      'Advanced DSA course project at Amrita, in a team of four. It extends the adaptive chunking of Yağız, Horasan and Yurttakal (2026).',
+    stack: ['Java 21', 'Spring Boot', 'PostgreSQL', 'React'],
   },
 ]

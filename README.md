@@ -28,20 +28,18 @@ Everything personal lives in `src/data/`, and the sections read from there:
 | `projects.ts` | The project ring: title, blurb, links, poster, preview video, stack |
 | `expertise.ts` | The numbered areas in the blue Expertise section |
 | `toolkit.ts` | Every tool in the Toolkit section, by group (logos from [Simple Icons](https://simpleicons.org)) |
-| `signature.ts` | The signature the intro writes (make it with `tools/sign.html`) |
 
 **Hero photo or resume:** drop the file in `public/` and set `heroImage` or `resume` in `site.ts`.
 
-**Signature:** open `tools/sign.html` in a browser, sign, press Copy, and paste over the object in
-`src/data/signature.ts`.
-
 **Add a project:** append an entry to `projects.ts`, then capture its poster (and, if you like, a
-short preview loop) with the project's dev server or live site running:
+short preview loop) with the project's dev server or live site running. Posters and Expertise images
+live in `src/assets/` and are imported by the data files, so the build serves them as AVIF/WebP at
+the right sizes; videos go in `public/videos/`.
 
 ```sh
-node scripts/grab.mjs https://example.com public/images/projects/example.jpg
+node scripts/grab.mjs https://example.com src/assets/projects/example.jpg
 # Filament's card: just the home-page simulation and its wordmark, recorded for 6 seconds
-node scripts/grab.mjs http://localhost:5173/ public/images/projects/filament.jpg \
+node scripts/grab.mjs http://localhost:5173/ src/assets/projects/filament.jpg \
   --only "[class*=_heroCanvasWrap_], h1" --record public/videos/filament.webm --seconds 6
 ```
 

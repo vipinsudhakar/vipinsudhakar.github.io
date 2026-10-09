@@ -3,7 +3,18 @@ import '@fontsource-variable/archivo'
 import archivo from '@fontsource-variable/archivo/files/archivo-latin-wght-normal.woff2?url'
 import '../styles/tokens.css'
 import '../styles/global.css'
+import { expertise } from '../data/expertise'
 import { site } from '../data/site'
+
+interface Props {
+  /** The tab title; the home page uses site.title. */
+  title?: string
+  /** Keeps the page out of search results (the 404 page). */
+  noindex?: boolean
+  /** The page has the loader and intro (Intro.astro), so scrolling starts locked until they finish. */
+  intro?: boolean
+}
+const { title = site.title, noindex = false, intro = true } = Astro.props
 
 const { email, phone, linkedin, github } = site.contact
 const canonical = new URL(Astro.url.pathname, site.url).href
@@ -24,6 +35,12 @@ const person = {
   name: site.name,
   url: site.url,
   description: site.description,
+  jobTitle: 'Software developer',
+  alumniOf: {
+    '@type': 'CollegeOrUniversity',
+    name: `${site.education.school}, ${site.education.campus}`,
+  },
+  knowsAbout: expertise.map((area) => area.title),
   sameAs: [github, linkedin].filter(Boolean),
 }
 ---
@@ -34,13 +51,20 @@ const person = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script is:inline>
-      // is-loading locks scrolling until the intro has played (see global.css and motion/intro.ts).
       document.documentElement.classList.replace('no-js', 'js')
-      document.documentElement.classList.add('is-loading')
       history.scrollRestoration = 'manual'
     </script>
-    <title>{site.title}</title>
+    {
+      intro && (
+        <script is:inline>
+          // Locks scrolling until the intro has played (see global.css and motion/intro.ts).
+          document.documentElement.classList.add('is-loading')
+        </script>
+      )
+    }
+    <title>{title}</title>
     <meta name="description" content={site.description} />
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preload" href={archivo} as="font" type="font/woff2" crossorigin />

@@ -95,6 +95,26 @@ button {
   overflow: clip;
 }
 
+/* Keyboard users: the first Tab shows a jump past the hero. */
+.skip-link {
+  position: fixed;
+  top: 0.75em;
+  left: 0.75em;
+  z-index: 1000;
+  padding: 0.75em 1em;
+  border-radius: 2.5em;
+  background: var(--c-ink);
+  color: var(--c-white);
+  line-height: 1;
+  text-transform: uppercase;
+  translate: 0 -250%;
+  transition: translate 0.25s var(--ease-house);
+}
+.skip-link:focus-visible {
+  translate: 0 0;
+  outline-color: var(--c-blue);
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

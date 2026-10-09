@@ -58,6 +58,11 @@ function setUp(root: HTMLElement) {
   }
 
   const pauseAll = () => videos.forEach((video) => video?.pause())
+  // Posters wait in data-poster until the ring first comes on screen (see Orbit.astro).
+  const loadPosters = () =>
+    videos.forEach((video) => {
+      if (video?.dataset.poster && !video.poster) video.poster = video.dataset.poster
+    })
   const playFront = () => {
     if (!inView) return
     videos.forEach((video, i) => i !== front && video?.pause())
@@ -73,6 +78,8 @@ function setUp(root: HTMLElement) {
     split: SplitText.create(el.querySelectorAll('[data-orbit-reveal]'), {
       type: 'lines',
       mask: 'lines',
+      // Lines keep whole words, so screen readers read them as they are.
+      aria: 'none',
       autoSplit: true,
       onSplit: (self) => void gsap.set(self.lines, { yPercent: index === shown ? 0 : 110 }),
     }),
@@ -163,6 +170,7 @@ function setUp(root: HTMLElement) {
     end: 'bottom top',
     onToggle: ({ isActive }) => {
       inView = isActive
+      if (isActive) loadPosters()
       if (isActive) {
         spin.play()
         playFront()

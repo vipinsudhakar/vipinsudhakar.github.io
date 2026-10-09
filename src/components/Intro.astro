@@ -2,11 +2,10 @@
 /**
  * The load intro. First paint is solid blue (the scribble at full width), with a loader: a
  * rolling percentage and a thin progress line that follow the real loading. At 100 the loader
- * rolls away, the signature writes itself and erases, then the scribble pulls away to reveal the
- * page. Scrolling is locked until then. Timeline in src/motion/intro.ts.
- * Hidden without JS; a CSS failsafe removes it if the scripts never run.
+ * rolls away and the scribble pulls away to reveal the page. Scrolling is locked until then.
+ * Timeline in src/motion/intro.ts. Hidden without JS; a CSS failsafe removes it if the scripts
+ * never run.
  */
-import { signature } from '../data/signature'
 import { screenScribble } from '../lib/scribble'
 
 const path = screenScribble({ seed: 3 })
@@ -28,15 +27,6 @@ const path = screenScribble({ seed: 3 })
     </p>
     <span class="intro__bar"><span data-loader-bar></span></span>
   </div>
-  {
-    signature.paths.length > 0 && (
-      <svg class="intro__signature" viewBox={signature.viewBox} data-intro-signature focusable="false">
-        {signature.paths.map((d) => (
-          <path d={d} />
-        ))}
-      </svg>
-    )
-  }
 </div>
 
 <style is:global>
@@ -151,15 +141,6 @@ const path = screenScribble({ seed: 3 })
     display: block;
   }
 
-  .intro__signature {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: min(40vw, 35em);
-    translate: -50% -50%;
-    color: var(--c-silver);
-    visibility: hidden;
-  }
   @media (max-width: 767px) {
     .intro__loader {
       padding: 0 1em 1.75em;
@@ -175,12 +156,5 @@ const path = screenScribble({ seed: 3 })
       left: 1em;
       bottom: 0.75em;
     }
-  }
-  .intro__signature path {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
   }
 </style>

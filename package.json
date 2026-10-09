@@ -12,6 +12,7 @@
     "shot": "node scripts/shot.mjs"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
     "@fontsource-variable/archivo": "^5.3.0",
     "astro": "^7.3.6",
     "gsap": "^3.15.0",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.63.0",
     "simple-icons": "^16.34.0",
     "typescript": "^6.0.3"
