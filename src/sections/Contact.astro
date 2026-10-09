@@ -46,6 +46,15 @@ import { inboxEndpoint } from '../lib/inbox'
         <li>
           <a data-underline href={site.contact.github} target="_blank" rel="noopener">GitHub</a>
         </li>
+        {
+          site.resume && (
+            <li>
+              <a data-underline href={site.resume} target="_blank" rel="noopener">
+                Résumé
+              </a>
+            </li>
+          )
+        }
       </ul>
     </div>
   </div>

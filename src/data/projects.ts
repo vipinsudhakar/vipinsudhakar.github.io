@@ -5,6 +5,8 @@ import trialbridge from '../assets/projects/trialbridge.jpg'
 
 export type Project = {
   title: string
+  /** The write-up's address, /projects/<slug>, and its file in src/content/writeups. */
+  slug: string
   blurb: string
   /** 'building' adds a "Building" tag next to the title. */
   status: 'live' | 'building'
@@ -26,18 +28,21 @@ export type Project = {
 export const projects: Project[] = [
   {
     title: 'TrialBridge',
+    slug: 'trialbridge',
     blurb:
-      "Matches cancer patients in India to clinical trials. Gemma 4 reads photos of their reports, then checks the patient against every eligibility rule of each recruiting trial and explains each verdict.",
+      'Finds the clinical trials recruiting in India that a cancer patient may qualify for. Gemma 4 reads photos of their reports, then checks the patient against every eligibility rule of each plausible trial and explains each verdict.',
     status: 'live',
     liveUrl: 'https://trialbridge-beta.vercel.app',
     repoUrl: 'https://github.com/vipinsudhakar/hacktoberfest-hack-day-coimbatore-x-init-club-and-idea-club',
     poster: trialbridge,
     video: '/videos/trialbridge.webm',
-    context: 'Team Latent at Hacktoberfest Hack Day Coimbatore. I built the architecture and the Gemma integration.',
+    context:
+      'Team Latent at Hacktoberfest Hack Day Coimbatore. My part was the application architecture and the Gemma 4 integration.',
     stack: ['Next.js', 'Gemma 4', 'TypeScript', 'ClinicalTrials.gov'],
   },
   {
     title: 'Filament',
+    slug: 'filament',
     blurb:
       'A slime mould that draws with light: a multi-species Physarum simulation on WebGPU that you can paint into.',
     status: 'live',
@@ -49,8 +54,9 @@ export const projects: Project[] = [
   },
   {
     title: 'Strand',
+    slug: 'strand',
     blurb:
-      'Protein and DNA sequence analysis in the browser. Biopython does the calculations and ESMFold predicts the 3D structure.',
+      'Protein and DNA sequence analysis on the web. Biopython does the calculations on the server, and ESMFold predicts the 3D structure.',
     status: 'live',
     liveUrl: 'https://strand-0rgw.onrender.com',
     repoUrl: 'https://github.com/vipinsudhakar/Strand',
@@ -60,6 +66,7 @@ export const projects: Project[] = [
   },
   {
     title: 'CAAC',
+    slug: 'caac',
     blurb:
       "Tamper-evident logs where a change stays local. Entries are hashed into a forest of Merkle trees, cut where the content says, so absorbing an insertion into 100,000 entries takes about 62× fewer hashes than the base paper's pipeline.",
     status: 'live',
@@ -68,7 +75,7 @@ export const projects: Project[] = [
     poster: caac,
     video: '/videos/caac.webm',
     context:
-      'Advanced DSA course project at Amrita, in a team of four. It extends the adaptive chunking of Yağız, Horasan and Yurttakal (2026).',
+      'Advanced DSA team project at Amrita; I built the whole system. It extends the adaptive chunking of Yağız, Horasan and Yurttakal (2026).',
     stack: ['Java 21', 'Spring Boot', 'PostgreSQL', 'React'],
   },
 ]

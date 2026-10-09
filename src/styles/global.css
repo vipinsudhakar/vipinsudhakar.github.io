@@ -95,6 +95,62 @@ button {
   overflow: clip;
 }
 
+/* Ruled rows like a spec sheet, the label on the left: education and milestones in About, the
+ facts at the top of a project write-up. */
+.facts {
+  width: 100%;
+  margin: 0;
+}
+.facts__row {
+  display: grid;
+  grid-template-columns: 9em minmax(0, 1fr);
+  gap: 0 1.5em;
+  padding: 1.1em 0;
+  border-top: 1px solid rgb(8 9 18 / 0.2);
+}
+.facts__row:last-child {
+  border-bottom: 1px solid rgb(8 9 18 / 0.2);
+}
+.facts__label {
+  grid-row: span 9;
+  padding-top: 0.2em;
+  font-size: 0.875em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.facts__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.15em 1.5em;
+  margin: 0;
+}
+.facts__item + .facts__item {
+  margin-top: 1em;
+}
+.facts__what {
+  font-size: 1.125em;
+  font-weight: 600;
+}
+.facts__where {
+  grid-row: 2;
+  opacity: 0.75;
+}
+.facts__year {
+  grid-row: 1;
+  grid-column: 2;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 767px) {
+  .facts__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6em;
+  }
+  .facts__label {
+    grid-row: auto;
+  }
+}
+
 /* Keyboard users: the first Tab shows a jump past the hero. */
 .skip-link {
   position: fixed;

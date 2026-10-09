@@ -4,6 +4,12 @@ import Wordmark from '../components/Wordmark.astro'
 import { site } from '../data/site'
 import { inboxEndpoint } from '../lib/inbox'
 
+interface Props {
+  /** On pages other than home, the menu links go back to the home page's sections. */
+  page?: boolean
+}
+const { page = false } = Astro.props
+const home = page ? '/' : ''
 const year = new Date().getFullYear()
 ---
 
@@ -26,6 +32,15 @@ const year = new Date().getFullYear()
               )
             }
             <li><a data-underline href={site.contact.github} target="_blank" rel="noopener">GitHub</a></li>
+            {
+              site.resume && (
+                <li>
+                  <a data-underline href={site.resume} target="_blank" rel="noopener">
+                    Résumé
+                  </a>
+                </li>
+              )
+            }
           </ul>
         </nav>
         <nav class="footer__col" aria-label="Menu">
@@ -34,7 +49,7 @@ const year = new Date().getFullYear()
             {
               site.nav.map((item) => (
                 <li>
-                  <a data-underline data-anchor href={item.href}>
+                  <a data-underline data-anchor={page ? undefined : ''} href={home + item.href}>
                     {item.label}
                   </a>
                 </li>
@@ -54,9 +69,9 @@ const year = new Date().getFullYear()
                 </li>
               )
             }
-            <li><a data-underline data-contact="email" href="#contact">Email</a></li>
-            <li><a data-underline data-contact="whatsapp" href="#contact" target="_blank" rel="noopener">WhatsApp</a></li>
-            <li><a data-underline data-contact="phone" href="#contact">Phone</a></li>
+            <li><a data-underline data-contact="email" href={home + '#contact'}>Email</a></li>
+            <li><a data-underline data-contact="whatsapp" href={home + '#contact'} target="_blank" rel="noopener">WhatsApp</a></li>
+            <li><a data-underline data-contact="phone" href={home + '#contact'}>Phone</a></li>
           </ul>
         </div>
       </div>

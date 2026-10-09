@@ -3,6 +3,8 @@ import BracketHeading from '../components/BracketHeading.astro'
 import Button from '../components/Button.astro'
 import { copy } from '../data/copy'
 import { site } from '../data/site'
+
+const { education, milestones } = site
 ---
 
 <section class="about" id="about" data-theme="dark">
@@ -13,12 +15,34 @@ import { site } from '../data/site'
   <div class="about__body">
     <BracketHeading>{copy.about.heading}</BracketHeading>
     {copy.about.paragraphs.map((text) => <p data-split-lines>{text}</p>)}
+    <dl class="facts">
+      <div class="facts__row">
+        <dt class="facts__label">Education</dt>
+        <dd class="facts__item">
+          <p class="facts__what">{education.degree}</p>
+          <p class="facts__where">{education.school}, {education.campus}</p>
+          <p class="facts__year">{education.start}–{education.end}</p>
+        </dd>
+      </div>
+      <div class="facts__row">
+        <dt class="facts__label">Milestones</dt>
+        {
+          milestones.map((m) => (
+            <dd class="facts__item">
+              <p class="facts__what">{m.title}</p>
+              <p class="facts__where">{m.detail}</p>
+              <p class="facts__year">{m.year}</p>
+            </dd>
+          ))
+        }
+      </div>
+    </dl>
     <div class="btn-row">
       <Button href="#contact" anchor variant="blue">Let's talk</Button>
       {
         site.resume && (
           <Button href={site.resume} variant="ink" external>
-            Resume
+            Résumé (PDF)
           </Button>
         )
       }

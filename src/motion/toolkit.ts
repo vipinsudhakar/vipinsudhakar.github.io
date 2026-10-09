@@ -1,8 +1,13 @@
 import type Lenis from 'lenis'
 import { gsap, ScrollTrigger, select } from './core'
 
-/** Lane drift at rest, in px per second; scrolling multiplies it. */
-const DRIFT = 26
+/**
+ * Once sorted, each lane rolls round once in about this many seconds, so even the longest group
+ * passes fully through view while you watch (within a readable speed range, px per second).
+ * Scrolling speeds it up; hovering a lane slows it right down.
+ */
+const LOOP_SECONDS = 18
+const SPEED = { min: 45, max: 95 }
 
 /**
  * The Toolkit's scroll moment (markup in Toolkit.astro).
@@ -11,9 +16,9 @@ const DRIFT = 26
  * 2. Order: scrolling flies every tool into its group's lane, lane by lane, while the count climbs
  *    to the total. It starts as the stage rises and finishes pinned. The scroll curve shapes
  *    each flight.
- * 3. Drift: once all have landed, each lane becomes a marquee (alternate lanes run opposite ways).
- *    Scrolling speeds them up, skews them a little and, scrolling back up, reverses them; hovering
- *    a lane slows it so a tool can be read.
+ * 3. Roll: once all have landed, each lane picks up speed into a rolling bar (alternate lanes run
+ *    opposite ways) that carries every tool through view. Scrolling speeds them up, skews them a
+ *    little and, scrolling back up, reverses them; hovering a lane slows it so a tool can be read.
  *
  * Without JS it stays the plain spec sheet.
  */
@@ -30,6 +35,9 @@ type Lane = {
   dir: 1 | -1
   x: number
   width: number
+  speed: number
+  /** What was last written, so a lane that hasn't moved isn't restyled every frame. */
+  shown: { x: number; skew: number }
   hover: number
   hoverTarget: number
   setX: (value: number) => void
@@ -67,6 +75,8 @@ function setUp(stage: HTMLElement, lenis: Lenis | null) {
       dir: i % 2 === 0 ? -1 : 1,
       x: 0,
       width: 0,
+      speed: SPEED.min,
+      shown: { x: NaN, skew: NaN },
       hover: 1,
       hoverTarget: 1,
       setX: gsap.quickSetter(track, 'x', 'px') as (value: number) => void,
@@ -74,7 +84,11 @@ function setUp(stage: HTMLElement, lenis: Lenis | null) {
     }
   })
   // One set's width, gap included: where the first copy starts.
-  const measure = () => lanes.forEach((lane) => (lane.width = lane.clones[0].offsetLeft - lane.originals[0].offsetLeft))
+  const measure = () =>
+    lanes.forEach((lane) => {
+      lane.width = lane.clones[0].offsetLeft - lane.originals[0].offsetLeft
+      lane.speed = gsap.utils.clamp(SPEED.min, SPEED.max, lane.width / LOOP_SECONDS)
+    })
   measure()
   gsap.set(lanes.flatMap((lane) => lane.clones), { autoAlpha: 0 })
 
@@ -123,12 +137,15 @@ function setUp(stage: HTMLElement, lenis: Lenis | null) {
   // --- 3: drift, once everything has landed.
   let sorted = false
   let settle: gsap.core.Tween | null = null
+  // 0 to 1: how far the lanes have picked up speed since they landed.
+  const roll = { amount: 0 }
   const setSorted = (on: boolean) => {
     if (on === sorted) return
     sorted = on
     stage.classList.toggle('is-sorted', on)
     const clones = lanes.flatMap((lane) => lane.clones)
     gsap.to(clones, { autoAlpha: on ? 1 : 0, duration: on ? 0.5 : 0.2, overwrite: true })
+    gsap.to(roll, { amount: on ? 1 : 0, duration: on ? 1.4 : 0.2, ease: on ? 'power2.in' : 'none', overwrite: true })
     if (!on) {
       // Heading back into the sort: glide the lanes home first so the tools fly from their places.
       settle?.kill()
@@ -177,17 +194,18 @@ function setUp(stage: HTMLElement, lenis: Lenis | null) {
     for (const lane of lanes) {
       lane.hover += (lane.hoverTarget - lane.hover) * 0.08
       if (sorted && !settle?.isActive()) {
-        lane.x += lane.dir * heading * DRIFT * boost * lane.hover * dt
+        lane.x += lane.dir * heading * lane.speed * roll.amount * boost * lane.hover * dt
         if (lane.x <= -lane.width) lane.x += lane.width
         else if (lane.x > 0) lane.x -= lane.width
       }
-      lane.setX(lane.x)
-      lane.setSkew(skew)
+      if (Math.abs(lane.x - lane.shown.x) > 0.01 || Number.isNaN(lane.shown.x)) lane.setX((lane.shown.x = lane.x))
+      if (Math.abs(skew - lane.shown.skew) > 0.01 || Number.isNaN(lane.shown.skew)) lane.setSkew((lane.shown.skew = skew))
     }
   }
-  // Only tick while the stage is on screen.
+  // Only tick while the stage is on screen. The trigger is the pin's spacer, not the stage: the
+  // stage measures as if never pinned, so its 'bottom top' would come before the pin even ends.
   ScrollTrigger.create({
-    trigger: stage,
+    trigger: stage.parentElement ?? stage,
     start: 'top bottom',
     end: 'bottom top',
     onToggle: ({ isActive }) => (isActive ? gsap.ticker.add(drift) : gsap.ticker.remove(drift)),

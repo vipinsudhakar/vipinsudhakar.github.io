@@ -9,12 +9,14 @@ import { site } from '../data/site'
 interface Props {
   /** The tab title; the home page uses site.title. */
   title?: string
+  /** The page's summary for search results and link previews; the home page uses site.description. */
+  description?: string
   /** Keeps the page out of search results (the 404 page). */
   noindex?: boolean
   /** The page has the loader and intro (Intro.astro), so scrolling starts locked until they finish. */
   intro?: boolean
 }
-const { title = site.title, noindex = false, intro = true } = Astro.props
+const { title = site.title, description = site.description, noindex = false, intro = true } = Astro.props
 
 const { email, phone, linkedin, github } = site.contact
 const canonical = new URL(Astro.url.pathname, site.url).href
@@ -63,7 +65,7 @@ const person = {
       )
     }
     <title>{title}</title>
-    <meta name="description" content={site.description} />
+    <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -72,15 +74,15 @@ const person = {
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
-    <meta property="og:title" content={site.title} />
-    <meta property="og:description" content={site.description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={site.title} />
-    <meta name="twitter:description" content={site.description} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
     <script type="application/ld+json" set:html={JSON.stringify(person)} />

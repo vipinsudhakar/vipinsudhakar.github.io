@@ -6,18 +6,31 @@
  */
 import Button from './Button.astro'
 import Wordmark from './Wordmark.astro'
+
+interface Props {
+  /** On pages other than home: the wordmark sits compact in the corner and links home. */
+  page?: boolean
+}
+const { page = false } = Astro.props
+const contactHref = page ? '/#contact' : '#contact'
 ---
 
 <header class="header" data-header>
   <div class="header__inner">
     <div class="header__brand-wrap">
-      <a class="brand" href="#top" data-brand data-anchor aria-label="Vipin Sudhakar, back to top">
+      <a
+        class:list={['brand', { 'is-page': page }]}
+        href={page ? '/' : '#top'}
+        data-brand
+        data-anchor={page ? undefined : ''}
+        aria-label={page ? 'Vipin Sudhakar, home' : 'Vipin Sudhakar, back to top'}
+      >
         <Wordmark decorative />
       </a>
     </div>
     <nav class="header__cta" aria-label="Get in touch">
-      <Button href="#contact" contact="email" variant="ink">Email me</Button>
-      <Button href="#contact" contact="whatsapp" variant="blue" external>WhatsApp</Button>
+      <Button href={contactHref} contact="email" variant="ink">Email me</Button>
+      <Button href={contactHref} contact="whatsapp" variant="blue" external>WhatsApp</Button>
     </nav>
   </div>
 </header>
@@ -74,8 +87,10 @@ import Wordmark from './Wordmark.astro'
     opacity: 0;
     pointer-events: none;
   }
-  .no-js .brand {
+  .no-js .brand,
+  .brand.is-page {
     --p: 1;
+    pointer-events: auto;
   }
 
   .header__cta {

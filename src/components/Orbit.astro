@@ -54,6 +54,11 @@ const corners =
                   </p>
                 )}
                 <ul class="orbit__meta" data-orbit-fade>
+                  <li>
+                    <a data-underline href={`/projects/${p.slug}`}>
+                      Read the write-up
+                    </a>
+                  </li>
                   {p.liveUrl && (
                     <li>
                       <a data-underline href={p.liveUrl} target="_blank" rel="noopener">

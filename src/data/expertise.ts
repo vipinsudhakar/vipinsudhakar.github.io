@@ -15,7 +15,7 @@ export type Area = {
 export const expertise: Area[] = [
   {
     title: 'Full-stack web',
-    text: 'Interfaces in React and TypeScript on top of Spring Boot or FastAPI services and PostgreSQL. I like owning the whole path, from the schema to the last pixel.',
+    text: 'Interfaces in React and TypeScript on top of Spring Boot or FastAPI services, with PostgreSQL or SQLite. I like owning the whole path, from the schema to the last pixel.',
     image: fullstack,
     alt: "Strand's protein tool analysing Green Fluorescent Protein: length, molecular weight, isoelectric point and composition",
   },
@@ -27,13 +27,13 @@ export const expertise: Area[] = [
   },
   {
     title: 'ML & bioinformatics',
-    text: 'Turning models into tools people can use: protein structure prediction with ESMFold, and Gemma 4 reading medical reports to match cancer patients with clinical trials.',
+    text: "Turning models into tools people can use: Gemma 4 reading cancer patients' medical reports into profiles for a clinical-trial matcher, and protein structure prediction with ESMFold.",
     image: bio,
     alt: 'Haemoglobin subunit alpha folded in 3D by ESMFold in Strand, coloured by prediction confidence',
   },
   {
     title: 'Systems & security',
-    text: 'Backend systems in Java with an eye on integrity: Merkle trees, tamper-evident logs and the chunking strategies behind them.',
+    text: 'Backend systems in Java with an eye on integrity: Merkle forests, tamper-evident logs, and content-anchored chunking that keeps a change to the log local.',
     image: systems,
     alt: 'The CAAC visualiser proving one log entry: a verified Merkle proof, with the path to the root traced through both trees',
   },

@@ -16,6 +16,7 @@ import { initScrollDraw } from './scroll-draw'
 import { initSplitLines, initSplitRandom, initSplitRolling } from './split'
 import { initThemeNav } from './theme-nav'
 import { initToolkit } from './toolkit'
+import { initPageTransitions } from './transition'
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -37,6 +38,7 @@ const pageLoaded = () =>
 async function boot() {
   // The loader takes over from the blue first frame; scrolling stays locked (html.is-loading).
   const loader = startLoader({ quick: seenIntro() })
+  initPageTransitions()
   loader.set(24)
   window.scrollTo(0, 0)
   initContactLinks()

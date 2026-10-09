@@ -1,0 +1,589 @@
+---
+/**
+ * A project's write-up: the story from src/content/writeups/<slug>.md, framed by the project's
+ * title, facts, links and preview from src/data/projects.ts. Same world as the home page: the
+ * scribble curtain pulls away on arrival, then the motion in src/motion/page.ts takes over (the
+ * title rolls in, the preview opens out of a letterbox, figures count up, section rules draw, a
+ * band of the name slides with the scroll, and the next project fills with blue as you reach it).
+ */
+import { getImage, Picture } from 'astro:assets'
+import { getEntry, render } from 'astro:content'
+import Button from '../../components/Button.astro'
+import Header from '../../components/Header.astro'
+import MessageBox from '../../components/MessageBox.astro'
+import PageCurtain from '../../components/PageCurtain.astro'
+import { projects } from '../../data/projects'
+import { site } from '../../data/site'
+import Base from '../../layouts/Base.astro'
+import { screenScribble } from '../../lib/scribble'
+import Footer from '../../sections/Footer.astro'
+
+export async function getStaticPaths() {
+  const pages = await Promise.all(
+    projects.map(async (project, index) => ((await getEntry('writeups', project.slug)) ? { project, index } : null)),
+  )
+  return pages
+    .filter((page) => page !== null)
+    .map(({ project, index }) => ({ params: { slug: project.slug }, props: { index } }))
+}
+
+const { index } = Astro.props
+const project = projects[index]
+// The next project that has a write-up, wrapping round.
+const order = [...projects.slice(index + 1), ...projects.slice(0, index)]
+const withWriteups = await Promise.all(order.map(async (p) => ((await getEntry('writeups', p.slug)) ? p : null)))
+const next = withWriteups.find((p) => p !== null) ?? null
+
+const entry = (await getEntry('writeups', project.slug))!
+const { Content } = await render(entry)
+const { summary, role, team, when, stats } = entry.data
+
+const pad = (n: number) => String(n).padStart(2, '0')
+const poster = project.poster ? await getImage({ src: project.poster, format: 'webp', width: 1200 }) : null
+const nextInk = screenScribble({ seed: 17 + index })
+// The band repeats enough to stay full while it slides.
+const nameRun = Array.from({ length: 6 }, () => project.title)
+const stackRun = Array.from({ length: 4 }, () => project.stack.join(' · '))
+---
+
+<Base title={`${project.title} · ${site.name}`} description={summary} intro={false}>
+  <a class="skip-link" href="#story">Skip to the write-up</a>
+  <PageCurtain covered />
+  <div class="writeup__progress" aria-hidden="true"><span data-progress></span></div>
+  <Header page />
+  <main class="writeup" data-theme="dark">
+    <header class="writeup__head">
+      <p class="writeup__eyebrow" data-enter>
+        <a data-underline href="/#projects">All projects</a>
+        <span aria-hidden="true">/</span>
+        <span>Project {pad(index + 1)} of {pad(projects.length)}</span>
+      </p>
+      <h1 class="writeup__title" data-enter-title>{project.title}</h1>
+      <div class="writeup__intro">
+        <p class="writeup__summary" data-enter-lines>{summary}</p>
+        <dl class="facts writeup__facts">
+          <div class="facts__row" data-enter-row>
+            <dt class="facts__label">Role</dt>
+            <dd class="facts__item"><p class="facts__what">{role}</p></dd>
+          </div>
+          <div class="facts__row" data-enter-row>
+            <dt class="facts__label">Team</dt>
+            <dd class="facts__item"><p class="facts__what">{team}</p></dd>
+          </div>
+          <div class="facts__row" data-enter-row>
+            <dt class="facts__label">When</dt>
+            <dd class="facts__item"><p class="facts__what">{when}</p></dd>
+          </div>
+          <div class="facts__row" data-enter-row>
+            <dt class="facts__label">Stack</dt>
+            <dd class="facts__item"><p class="facts__what">{project.stack.join(' · ')}</p></dd>
+          </div>
+        </dl>
+      </div>
+      <div class="btn-row" data-enter>
+        {
+          project.liveUrl && (
+            <Button href={project.liveUrl} variant="blue" external>
+              Live demo
+            </Button>
+          )
+        }
+        {
+          project.repoUrl && (
+            <Button href={project.repoUrl} variant="ink" external>
+              Source
+            </Button>
+          )
+        }
+      </div>
+    </header>
+
+    <figure class="writeup__media">
+      <span class="writeup__frame" data-writeup-frame>
+        <span class="writeup__zoom" data-writeup-zoom>
+          {
+            project.poster && (
+              <Picture
+                src={project.poster}
+                formats={['avif', 'webp']}
+                widths={[640, 960, 1200]}
+                sizes="(max-width: 767px) 100vw, 72vw"
+                alt={`${project.title}: a screenshot`}
+                fetchpriority="high"
+                draggable="false"
+              />
+            )
+          }
+          {
+            project.video && (
+              <video muted loop playsinline autoplay preload="auto" poster={poster?.src} aria-hidden="true">
+                <source src={project.video} type="video/webm" />
+              </video>
+            )
+          }
+        </span>
+      </span>
+    </figure>
+
+    {
+      stats && (
+        <ul class="writeup__stats" data-stats>
+          {stats.map(({ value, label }) => (
+            <li class="writeup__stat">
+              <span class="writeup__stat-value" data-count>
+                {value}
+              </span>
+              <span class="writeup__stat-label">{label}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <article class="writeup__story prose" id="story" data-prose>
+      <Content />
+    </article>
+  </main>
+
+  <div class="writeup__band" aria-hidden="true" data-band>
+    <p class="writeup__band-row" data-band-row="-1">
+      {nameRun.map((name) => <span>{name}</span>)}
+    </p>
+    <p class="writeup__band-row is-outline" data-band-row="1">
+      {stackRun.map((stack) => <span>{stack}</span>)}
+    </p>
+  </div>
+
+  {
+    next && (
+      <nav aria-label="Next project">
+        <a class="writeup__next" href={`/projects/${next.slug}`} data-next data-theme="dark">
+          <svg class="writeup__next-ink" viewBox="0 0 3200 3100" preserveAspectRatio="none" aria-hidden="true">
+            <path d={nextInk} />
+          </svg>
+          <span class="writeup__next-label">Next project</span>
+          <span class="writeup__next-title">
+            <span data-next-title data-split-random>
+              {next.title}
+            </span>
+            <span class="writeup__arrow" aria-hidden="true">
+              →
+            </span>
+          </span>
+        </a>
+      </nav>
+    )
+  }
+  <Footer page />
+  <MessageBox />
+  <script>
+    import '../../motion/page'
+  </script>
+</Base>
+
+<style is:global>
+  .writeup {
+    width: 100%;
+    max-width: var(--scale-max);
+    margin-inline: auto;
+    padding: 9em 2em 6em;
+  }
+
+  /* Reading progress: a hairline along the top of the screen. */
+  .writeup__progress {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 100;
+    height: 3px;
+    pointer-events: none;
+  }
+  .writeup__progress span {
+    display: block;
+    height: 100%;
+    background: var(--c-blue);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .writeup__eyebrow {
+    display: flex;
+    gap: 0.6em;
+    font-size: 0.875em;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .writeup__eyebrow > span {
+    opacity: 0.7;
+  }
+  .writeup__title {
+    margin-top: 0.35em;
+    font-size: 7.5em;
+    font-weight: 700;
+    line-height: 0.95;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+  .writeup__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 3em;
+    margin-top: 3em;
+  }
+  .writeup__summary {
+    max-width: 22em;
+    font-size: 1.75em;
+    line-height: 1.25;
+  }
+  .writeup__head .btn-row {
+    margin-top: 3em;
+  }
+  /* The facts' rules draw in from the left (--rule, set by the script). */
+  .writeup__facts .facts__row,
+  .writeup__facts .facts__row:last-child {
+    border: 0;
+    background:
+      linear-gradient(rgb(8 9 18 / 0.2), rgb(8 9 18 / 0.2)) left top / var(--rule, 100%) 1px no-repeat,
+      linear-gradient(rgb(8 9 18 / 0.2), rgb(8 9 18 / 0.2)) left bottom / var(--rule-end, 0%) 1px no-repeat;
+  }
+  .writeup__facts .facts__row:last-child {
+    --rule-end: var(--rule, 100%);
+  }
+
+  /* The preview, opening out of a letterbox as it scrolls in, its picture settling from a zoom. */
+  .writeup__media {
+    margin: 6em 0 0;
+  }
+  .writeup__frame {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    max-height: 85vh;
+    margin-inline: auto;
+    overflow: hidden;
+    border-radius: 0.65em;
+    background: rgb(8 9 18 / 0.06);
+  }
+  .writeup__zoom {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+  .writeup__zoom > picture,
+  .writeup__zoom img,
+  .writeup__zoom > video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Headline figures. */
+  .writeup__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12em, 1fr));
+    gap: 2em 3em;
+    margin-top: 6em;
+    padding: 0;
+    list-style: none;
+  }
+  .writeup__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+    padding-top: 1.25em;
+    background: linear-gradient(var(--c-blue), var(--c-blue)) left top / var(--rule, 100%) 2px no-repeat;
+  }
+  .writeup__stat-value {
+    font-size: 4.5em;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--c-blue);
+    white-space: nowrap;
+  }
+  .writeup__stat-label {
+    max-width: 18em;
+    opacity: 0.8;
+  }
+
+  /* The story: section titles on the left, text on the right, a rule above each section. */
+  .prose {
+    display: grid;
+    grid-template-columns: minmax(10em, 1fr) minmax(0, 2fr);
+    column-gap: 3em;
+    margin-top: 7em;
+    font-size: 1.125em;
+    line-height: 1.55;
+  }
+  .prose > * {
+    grid-column: 2;
+    max-width: 38em;
+  }
+  .prose > * + * {
+    margin-top: 1em;
+  }
+  .prose > h2,
+  .prose > h2 + * {
+    background: linear-gradient(rgb(8 9 18 / 0.2), rgb(8 9 18 / 0.2)) left top / var(--rule, 100%) 1px no-repeat;
+  }
+  .prose > h2 {
+    grid-column: 1;
+    align-self: start;
+    margin-top: 3.5em;
+    padding-top: 1em;
+    font-size: 1.5em;
+    font-weight: 700;
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+  .prose > h2 + * {
+    margin-top: 5.25em;
+    padding-top: 1.5em;
+  }
+  .prose > h2:first-child,
+  .prose > h2:first-child + * {
+    margin-top: 0;
+  }
+  /* Without the script the brackets are drawn by CSS; with it they're spans that slide in. */
+  .prose:not(.is-live) > h2::before {
+    content: '[ ';
+    font-weight: 300;
+  }
+  .prose:not(.is-live) > h2::after {
+    content: ' ]';
+    font-weight: 300;
+  }
+  .prose .prose__b {
+    display: inline-block;
+    font-weight: 300;
+  }
+  .prose .prose__b.is-left {
+    margin-right: 0.3em;
+  }
+  .prose .prose__b.is-right {
+    margin-left: 0.3em;
+  }
+  .prose h3 {
+    font-size: 1.125em;
+    font-weight: 700;
+  }
+  .prose strong {
+    font-weight: 650;
+  }
+  .prose a {
+    color: var(--c-blue);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .prose ul,
+  .prose ol {
+    display: grid;
+    gap: 0.5em;
+    padding-left: 1.25em;
+  }
+  .prose ul {
+    list-style: square;
+  }
+  .prose li::marker {
+    color: var(--c-blue);
+  }
+  .prose code {
+    font-size: 0.9em;
+    font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  }
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+  .prose th,
+  .prose td {
+    padding: 0.55em 0.75em 0.55em 0;
+    border-bottom: 1px solid rgb(8 9 18 / 0.15);
+    text-align: left;
+  }
+  .prose th {
+    font-size: 0.875em;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .prose td:not(:first-child),
+  .prose th:not(:first-child) {
+    text-align: right;
+  }
+  .prose blockquote {
+    padding-left: 1em;
+    border-left: 2px solid var(--c-blue);
+  }
+
+  /* A band of the name and the stack, sliding with the scroll (opposite ways). */
+  .writeup__band {
+    display: grid;
+    gap: 0.1em;
+    padding: 4em 0 6em;
+    overflow: hidden;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .writeup__band-row {
+    display: flex;
+    gap: 0.5em;
+    width: max-content;
+    font-size: 9em;
+    will-change: transform;
+  }
+  .writeup__band-row > span::after {
+    content: '✦';
+    margin-left: 0.5em;
+    font-size: 0.4em;
+    vertical-align: middle;
+    color: var(--c-blue);
+  }
+  .writeup__band-row.is-outline {
+    font-size: 4em;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--c-ink);
+  }
+  .writeup__band-row.is-outline > span::after {
+    -webkit-text-stroke: 0;
+  }
+
+  /* Next project: a scribble fills the block with blue as it arrives, running into the footer. */
+  .writeup__next {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5em;
+    min-height: 80vh;
+    padding: 6em 2em;
+    overflow: hidden;
+    color: var(--c-ink);
+    transition: color 0.5s var(--ease-house);
+  }
+  .writeup__next.is-filled {
+    color: var(--c-silver);
+  }
+  .writeup__next-ink {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    color: var(--c-blue);
+    pointer-events: none;
+  }
+  .writeup__next-ink path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 0;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .writeup__next-label,
+  .writeup__next-title {
+    position: relative;
+    max-width: calc(var(--scale-max) - 4em);
+  }
+  .writeup__next-label {
+    font-size: 0.875em;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+  .writeup__next-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.3em;
+    font-size: 8em;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .writeup__arrow {
+    font-weight: 300;
+    transition: translate 0.45s var(--ease-house);
+  }
+  .writeup__next:hover .writeup__arrow,
+  .writeup__next:focus-visible .writeup__arrow {
+    translate: 0.3em 0;
+  }
+
+  @media (max-width: 991px) {
+    .writeup {
+      padding: 7.5em 1.5em 5em;
+    }
+    .writeup__title {
+      font-size: 5em;
+    }
+    .writeup__intro {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2em;
+    }
+    .writeup__stat-value {
+      font-size: 3.5em;
+    }
+    .prose {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .prose > *,
+    .prose > h2 {
+      grid-column: 1;
+    }
+    .prose > h2 + * {
+      margin-top: 1em;
+      padding-top: 0;
+      background: none;
+    }
+    .writeup__band-row {
+      font-size: 6em;
+    }
+    .writeup__band-row.is-outline {
+      font-size: 3em;
+    }
+    .writeup__next {
+      padding: 5em 1.5em;
+    }
+    .writeup__next-title {
+      font-size: 5em;
+    }
+  }
+  @media (max-width: 767px) {
+    .writeup {
+      padding: 6.5em 1em 4em;
+    }
+    .writeup__title {
+      font-size: 3.25em;
+    }
+    .writeup__summary {
+      font-size: 1.35em;
+    }
+    .writeup__frame {
+      border-radius: 0.5em;
+    }
+    .writeup__stats {
+      grid-template-columns: minmax(0, 1fr);
+      margin-top: 4em;
+    }
+    .writeup__band-row {
+      font-size: 4em;
+    }
+    .writeup__band-row.is-outline {
+      font-size: 2em;
+    }
+    .writeup__next {
+      min-height: 60vh;
+      padding: 4em 1em;
+    }
+    .writeup__next-title {
+      font-size: 3em;
+    }
+  }
+</style>

@@ -1,0 +1,52 @@
+---
+/**
+ * The page transition: a blue scribble that sweeps over the screen before leaving for another page
+ * and pulls away on arrival (src/motion/transition.ts). `covered` starts it solid blue, for pages
+ * that open with it pulling away; a CSS failsafe hides it if the scripts never run.
+ */
+import { screenScribble } from '../lib/scribble'
+
+interface Props {
+  covered?: boolean
+}
+const { covered = false } = Astro.props
+const path = screenScribble({ seed: 12 })
+---
+
+<div class:list={['curtain', { 'is-covered': covered }]} data-curtain aria-hidden="true">
+  <svg viewBox="0 0 3200 3100" preserveAspectRatio="none" focusable="false">
+    <path d={path} data-curtain-path></path>
+  </svg>
+</div>
+
+<style is:global>
+  .curtain {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    color: var(--c-blue);
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .js .curtain.is-covered {
+    visibility: visible;
+    animation: curtain-failsafe 0s linear 4s forwards;
+  }
+  @keyframes curtain-failsafe {
+    to {
+      visibility: hidden;
+    }
+  }
+  .curtain svg {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+  }
+  .curtain path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 80%;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+</style>

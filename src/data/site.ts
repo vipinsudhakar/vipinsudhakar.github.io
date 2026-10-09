@@ -18,8 +18,8 @@ export const site = {
 
   /** Full-bleed hero photo under public/, e.g. { src: '/images/hero.jpg', alt: 'Vipin Sudhakar' }. null shows the placeholder. */
   heroImage: null as { src: string; alt: string } | null,
-  /** A PDF under public/, e.g. '/resume.pdf'. null hides the Resume button. */
-  resume: null as string | null,
+  /** A PDF under public/ (made by scripts/resume.mjs). null hides the Résumé links. */
+  resume: '/resume.pdf' as string | null,
 
   /** Where you study. Also used by search engines (Base.astro) and the résumé. */
   education: {
@@ -30,6 +30,11 @@ export const site = {
     end: 2029,
     cgpa: '9.1/10',
   },
+  /** Shown under About and on the résumé. */
+  milestones: [
+    { title: 'Hacktoberfest Hack Day Coimbatore', detail: 'Built TrialBridge with Team Latent', year: 2026 },
+    { title: 'CAAC course project', detail: 'Advanced DSA, team of four, reviewed', year: 2026 },
+  ],
 
   contact: {
     /** Name and domain, joined with @ in the browser. */
